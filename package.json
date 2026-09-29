@@ -25,9 +25,8 @@
     "check": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run deps:check && pnpm run doctor && pnpm run ui:doctor"
   },
   "dependencies": {
-    "@expo-google-fonts/cormorant-garamond": "^0.4.1",
     "@expo-google-fonts/inter": "^0.4.2",
-    "@expo-google-fonts/vazirmatn": "^0.4.1",
+    "@expo-google-fonts/noto-sans-arabic": "^0.4.3",
     "@hookform/resolvers": "^5.9.1",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/netinfo": "12.0.1",

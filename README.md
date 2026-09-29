@@ -1,6 +1,6 @@
 # ZAPE Native
 
-Mobile-only Expo foundation for ZAPE on iOS and Android. It currently shows a branded development-readiness screen, not product features.
+Mobile-only Expo app for ZAPE RelTime on iOS and Android. The app frame is in place: five tabs, clock themes, locale formatting and a typed API layer with a development mock backend. Feature screens are filled in by the OpenSpec changes under `openspec/changes`.
 
 ## Getting started
 
@@ -47,19 +47,29 @@ Keep Metro running to see JavaScript edits refresh on the phone. Rebuild only wh
 
 ## Configuration
 
-The only public setting is `EXPO_PUBLIC_API_BASE_URL` in `.env`. It is optional for the readiness screen and must be a valid URL when present. Use `http://10.0.2.2:<port>` for an Android emulator, `http://localhost:<port>` for an iOS simulator, and your computer's reachable LAN IP or HTTPS address for a physical phone. `EXPO_PUBLIC_*` variables are embedded in the app bundle: never put credentials there.
+Public settings live in `.env` (copy `.env.example`). `EXPO_PUBLIC_*` variables are embedded in the app bundle: never put credentials there.
 
-No API domain operations or authentication token schema exist yet. `src/config/runtime-config.ts` validates public configuration; `src/api/client.ts` is a generic request transport; `src/storage/secure-value-store.ts` reserves opaque secure values.
+| Variable                   | Values                                | Effect                                                                                                                                                                                       |
+| -------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `EXPO_PUBLIC_API_BASE_URL` | credential-free HTTP(S) URL, optional | The Relationship OS API. Use `http://10.0.2.2:<port>` for an Android emulator, `http://localhost:<port>` for an iOS simulator, and a reachable LAN IP or HTTPS address for a physical phone. |
+| `EXPO_PUBLIC_API_MOCK`     | `true` / `false`, optional            | `true` forces the in-app mock backend in development builds.                                                                                                                                 |
+
+`src/config/runtime-config.ts` validates these values and resolves the backend:
+
+- **real**: a base URL is set and the mock is not requested.
+- **mock**: a development build with `EXPO_PUBLIC_API_MOCK=true` or no base URL. The More tab footer shows a "Mock data" marker that opens the dev-only Mock controls sheet: partner actions and a reset to the design-canvas seed. Mock state persists in AsyncStorage under `zape.mock.*`.
+- **misconfigured**: a release build without a base URL. The app shows a configuration error and makes no domain calls; the mock never ships.
 
 ## Architecture
 
-- `src/app` contains Expo Router routes only. The root shows readiness; `(auth)` and `(app)` contain non-final placeholders, not final navigation.
-- `src/features` owns future product behavior. Core modules (`api`, `config`, `localization`, `preferences`, `providers`, `storage`, `theme`) never import features.
-- `src/components/ui` contains the ten selected React Native Reusables primitives plus their generated icon helper. Their source belongs to this repo.
-- TanStack Query owns remote state. Zustand owns only local theme/locale preferences in AsyncStorage; SecureStore is reserved for secrets.
-- NativeWind 4 consumes ZAPE's semantic maroon/mist/void tokens. Vazirmatn, Inter, and Cormorant Garamond are bundled as local font assets through Expo Google Fonts packages; no font is fetched at runtime. The app mark comes from ZAPE's existing favicon.
+- `src/app` contains Expo Router routes only. `(main)/(tabs)` holds the five tabs (Home, Rel Clock, Status, Note, More) behind a floating tab bar. Secondary screens go directly in `(main)/`, open above the tabs with an `origin` param, and keep the tab bar visible. `(onboarding)` is the signed-out entry on the light tone. `dev/readiness` and `dev/mock-controls` are registered only in development builds.
+- `src/features` owns product behavior: `shell` (tab bar, screen scaffolds, connectivity UI), `clock-themes` (backgrounds, theme thumbnails, the Clock style panel) and `development` (readiness and mock tools). Core modules (`api`, `config`, `localization`, `preferences`, `providers`, `storage`, `theme`) never import features.
+- `src/api` layers domain calls on the generic transport in `client.ts`: zod `contracts/`, typed `endpoints/`, `backend.ts` (real or mock transport; a 401 clears the session through `session.ts`), `mock/` (router-backed `fetcher`, seed, partner controls), `errors.ts` (localized error messages) and `query-client.ts` (refetch on foreground and reconnect, 30-second partner-data polling, writes paused while offline).
+- `src/components/ui` contains the selected React Native Reusables primitives plus their generated icon helper. Their source belongs to this repo.
+- TanStack Query owns remote state. Zustand owns only local preferences (locale, clock theme, background) in AsyncStorage; SecureStore is reserved for secrets.
+- The clock theme is the app theme. Each of the ten themes maps to a `dark`, `light` or `gray` tone from the design canvas; `ToneProvider` writes the tone's palette into NativeWind CSS variables, so classes such as `bg-background text-foreground` restyle the whole app, and SVG artwork reads the same palette through `useTone()`. The ZAPE tokens are burgundy `#65001c`, white, cool gray `#e8eced` and black `#151515`. Noto Sans Arabic (Persian) and Inter (English) are bundled in weights 400/500/600 through Expo Google Fonts packages; no font is fetched at runtime. The app mark comes from ZAPE's existing favicon.
 
-Persian (`fa`) is the default language and English (`en`) is the fallback. The native writing direction is RTL for Persian and LTR for English. Selecting a locale with a different direction persists the choice, then reloads the app so native layout mirroring takes effect. Light/dark preferences follow the system unless overridden; the cosmic-club treatment is deliberately not a global theme.
+Persian (`fa`) is the default language and English (`en`) is the fallback. Strings are split into namespaces under `src/localization/resources/{fa,en}`, and `src/localization/format.ts` renders Persian digits, Jalali dates and relative times. The native writing direction is RTL for Persian and LTR for English. Selecting a locale with a different direction persists the choice, then reloads the app so native layout mirroring takes effect. Decorative motion follows the OS reduce-motion setting.
 
 ## Validation
 

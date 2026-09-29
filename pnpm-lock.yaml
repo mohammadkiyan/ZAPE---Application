@@ -7,15 +7,12 @@ settings:
 importers:
   .:
     dependencies:
-      '@expo-google-fonts/cormorant-garamond':
-        specifier: ^0.4.1
-        version: 0.4.1
       '@expo-google-fonts/inter':
         specifier: ^0.4.2
         version: 0.4.2
-      '@expo-google-fonts/vazirmatn':
-        specifier: ^0.4.1
-        version: 0.4.1
+      '@expo-google-fonts/noto-sans-arabic':
+        specifier: ^0.4.3
+        version: 0.4.3
       '@hookform/resolvers':
         specifier: ^5.9.1
         version: 5.9.1(@sinclair/typebox@0.34.52)(react-hook-form@7.89.0(@types/react@19.2.18)(react@19.2.3))(zod@4.6.5)
@@ -999,12 +996,6 @@ packages:
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
 
-  '@expo-google-fonts/cormorant-garamond@0.4.1':
-    resolution:
-      {
-        integrity: sha512-e8J4Cn13K1txygamg50n3odLUsYP7Ck28XOGobMi7uDsWvFmp/jgK0qcALqJTlmi9NczSWUNdERxcLauHCBa/Q==,
-      }
-
   '@expo-google-fonts/inter@0.4.2':
     resolution:
       {
@@ -1017,10 +1008,10 @@ packages:
         integrity: sha512-aZztj44PyA/sj3TXSwwpLJwqMlTUJ49okbZJYURzEcuERxMQB0KbX7RrLBi8WJnuWz5HFOLlTRxORrJfNnUPNQ==,
       }
 
-  '@expo-google-fonts/vazirmatn@0.4.1':
+  '@expo-google-fonts/noto-sans-arabic@0.4.3':
     resolution:
       {
-        integrity: sha512-sznMvxt99C4bsEcWCebs3XWb/av8z9a/Y4OQo8F7VPFT0xzzn7Whkkw6dqxcAyLYEiNNpTpa3/vp8t1/koK6Jw==,
+        integrity: sha512-YvtxyuegxPegu2g5urXJ+gQxRp8i798nQswTmEjwXOWR/fqy0Gvey6h5IoNRBrc43SxRxPezqCiR9ivpfPAXSg==,
       }
 
   '@expo/cli@57.0.27':
@@ -9879,13 +9870,11 @@ snapshots:
       '@eslint/core': 0.17.0
       levn: 0.4.1
 
-  '@expo-google-fonts/cormorant-garamond@0.4.1': {}
-
   '@expo-google-fonts/inter@0.4.2': {}
 
   '@expo-google-fonts/material-symbols@0.4.48': {}
 
-  '@expo-google-fonts/vazirmatn@0.4.1': {}
+  '@expo-google-fonts/noto-sans-arabic@0.4.3': {}
 
   '@expo/cli@57.0.27(@expo/dom-webview@57.0.1)(@expo/metro-runtime@57.0.16)(expo-constants@57.0.20)(expo-font@57.0.4)(expo-router@57.0.24)(expo@57.0.26)(react-dom@19.2.3(react@19.2.3))(react-native@0.86.3(@babel/core@7.29.7)(@react-native/jest-preset@0.86.3(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.3(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.3))(react@19.2.3)(typescript@6.0.3)':
     dependencies:

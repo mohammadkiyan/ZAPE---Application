@@ -4,15 +4,15 @@ import { I18nManager, Text } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { reloadAppAsync } from 'expo';
 import { preferencesStore } from '@/preferences/preferences';
+import { useFonts } from 'expo-font';
 import { AppHydrationGate } from './app-providers';
 
-jest.mock('expo-font', () => ({ useFonts: () => [true, null] }));
+jest.mock('expo-font', () => ({ useFonts: jest.fn(() => [true, null]) }));
 jest.mock('expo-splash-screen', () => ({
   preventAutoHideAsync: jest.fn(async () => undefined),
   hideAsync: jest.fn(async () => undefined),
 }));
 jest.mock('expo', () => ({ reloadAppAsync: jest.fn(async () => undefined) }));
-jest.mock('nativewind', () => ({ useColorScheme: () => ({ setColorScheme: jest.fn() }) }));
 jest.mock('expo-router/react-navigation', () => ({
   ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
@@ -21,9 +21,15 @@ jest.mock('expo-status-bar', () => ({ StatusBar: () => null }));
 describe('app hydration gate', () => {
   beforeEach(async () => {
     await AsyncStorage.clear();
-    preferencesStore.setState({ hydrated: false, locale: 'fa', theme: 'system' });
+    preferencesStore.setState({
+      hydrated: false,
+      locale: 'fa',
+      clockTheme: 'constellation',
+      background: 'auto',
+    });
     Object.defineProperty(I18nManager, 'isRTL', { value: true, configurable: true });
     jest.clearAllMocks();
+    jest.mocked(useFonts).mockReturnValue([true, null]);
     jest.mocked(reloadAppAsync).mockResolvedValue(undefined);
   });
 
@@ -35,6 +41,45 @@ describe('app hydration gate', () => {
     );
     await waitFor(() => expect(result.getByText('ready child')).toBeTruthy());
     expect(SplashScreen.hideAsync).toHaveBeenCalled();
+  });
+
+  it('loads the bundled Noto Sans Arabic and Inter weights before hiding the splash', async () => {
+    jest.mocked(useFonts).mockReturnValue([false, null]);
+    const result = render(
+      <AppHydrationGate>
+        <Text>ready child</Text>
+      </AppHydrationGate>
+    );
+    await waitFor(() => expect(preferencesStore.getState().hydrated).toBe(true));
+    expect(Object.keys(jest.mocked(useFonts).mock.calls[0]![0] as object).sort()).toEqual([
+      'Inter',
+      'Inter-Medium',
+      'Inter-SemiBold',
+      'NotoSansArabic',
+      'NotoSansArabic-Medium',
+      'NotoSansArabic-SemiBold',
+    ]);
+    expect(SplashScreen.hideAsync).not.toHaveBeenCalled();
+    expect(result.queryByText('ready child')).toBeNull();
+
+    jest.mocked(useFonts).mockReturnValue([true, null]);
+    result.rerender(
+      <AppHydrationGate>
+        <Text>ready child</Text>
+      </AppHydrationGate>
+    );
+    await waitFor(() => expect(result.getByText('ready child')).toBeTruthy());
+    expect(SplashScreen.hideAsync).toHaveBeenCalled();
+  });
+
+  it('applies the stored clock theme tone', async () => {
+    preferencesStore.setState({ hydrated: true, clockTheme: 'porcelain' });
+    const result = render(
+      <AppHydrationGate>
+        <Text>ready child</Text>
+      </AppHydrationGate>
+    );
+    await waitFor(() => expect(result.getByTestId('tone-light')).toBeTruthy());
   });
 
   it('reloads when the hydrated locale needs the opposite native direction', async () => {

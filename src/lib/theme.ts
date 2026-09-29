@@ -1,73 +1,60 @@
 import type { Theme } from 'expo-router/react-navigation';
+import { BURGUNDY, TONES, type Tone } from '@/theme/clock-themes';
+import { FONT_FAMILY } from '@/theme/fonts';
 
-export const semanticPalette = {
-  light: {
-    background: '#f0f1f1',
-    foreground: '#28282a',
-    card: '#ffffff',
-    popover: '#ffffff',
-    primary: '#7f1d31',
-    secondary: '#f0f0f1',
-    muted: '#f0f0f1',
-    accent: '#e9e9eb',
-    destructive: '#b92727',
-    border: '#dedfe0',
-    input: '#dedfe0',
-    ring: '#7f1d31',
+function semanticPalette(tone: Tone) {
+  const p = TONES[tone];
+  return {
+    background: p.bg,
+    foreground: p.fg,
+    card: p.glass,
+    popover: p.sheet,
+    primary: BURGUNDY,
+    secondary: p.off,
+    muted: p.muted,
+    accent: p.inner,
+    destructive: tone === 'dark' ? '#e8847b' : '#b92727',
+    border: p.border,
+    input: p.control,
+    // Burgundy is unreadable on the dark tone, so focus rings use the light ink there.
+    ring: tone === 'dark' ? p.ring : BURGUNDY,
     radius: 4,
-  },
-  dark: {
-    background: '#252428',
-    foreground: '#dfe5e8',
-    card: '#302f33',
-    popover: '#39383d',
-    primary: '#c78c99',
-    secondary: '#39383d',
-    muted: '#39383d',
-    accent: '#46454a',
-    destructive: '#e8847b',
-    border: '#55545b',
-    input: '#686770',
-    ring: '#d49ba8',
-    radius: 4,
-  },
-} as const;
+  };
+}
 
-// Native navigation colors mirror the semantic NativeWind palette. Cosmic club
-// treatments belong to future feature scopes, never to this global default.
-export const NAV_THEME: Record<'light' | 'dark', Theme> = {
-  light: {
-    dark: false,
+/** JS-side semantic colors per clock-theme tone; NativeWind classes read the same values via CSS variables. */
+export const THEME: Record<Tone, ReturnType<typeof semanticPalette>> = {
+  dark: semanticPalette('dark'),
+  light: semanticPalette('light'),
+  gray: semanticPalette('gray'),
+};
+
+const fonts: Theme['fonts'] = {
+  regular: { fontFamily: FONT_FAMILY.fa[400], fontWeight: '400' },
+  medium: { fontFamily: FONT_FAMILY.fa[500], fontWeight: '500' },
+  bold: { fontFamily: FONT_FAMILY.fa[600], fontWeight: '600' },
+  heavy: { fontFamily: FONT_FAMILY.fa[600], fontWeight: '600' },
+};
+
+function navTheme(tone: Tone): Theme {
+  const theme = THEME[tone];
+  return {
+    dark: tone === 'dark',
     colors: {
-      primary: '#7f1d31',
-      background: '#f0f1f1',
-      card: '#ffffff',
-      text: '#28282a',
-      border: '#dedfe0',
-      notification: '#b92727',
+      primary: tone === 'dark' ? theme.foreground : theme.primary,
+      background: theme.background,
+      card: theme.background,
+      text: theme.foreground,
+      border: theme.border,
+      notification: theme.primary,
     },
-    fonts: {
-      regular: { fontFamily: 'Vazirmatn', fontWeight: '400' },
-      medium: { fontFamily: 'Vazirmatn', fontWeight: '500' },
-      bold: { fontFamily: 'Vazirmatn', fontWeight: '700' },
-      heavy: { fontFamily: 'Vazirmatn', fontWeight: '800' },
-    },
-  },
-  dark: {
-    dark: true,
-    colors: {
-      primary: '#c78c99',
-      background: '#252428',
-      card: '#302f33',
-      text: '#dfe5e8',
-      border: '#55545b',
-      notification: '#e8847b',
-    },
-    fonts: {
-      regular: { fontFamily: 'Vazirmatn', fontWeight: '400' },
-      medium: { fontFamily: 'Vazirmatn', fontWeight: '500' },
-      bold: { fontFamily: 'Vazirmatn', fontWeight: '700' },
-      heavy: { fontFamily: 'Vazirmatn', fontWeight: '800' },
-    },
-  },
+    fonts,
+  };
+}
+
+// Native navigation colors follow the active clock-theme tone.
+export const NAV_THEME: Record<Tone, Theme> = {
+  dark: navTheme('dark'),
+  light: navTheme('light'),
+  gray: navTheme('gray'),
 };

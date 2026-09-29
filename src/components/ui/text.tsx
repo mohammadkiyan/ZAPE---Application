@@ -1,4 +1,6 @@
 import { cn } from '@/lib/utils';
+import { usePreferences } from '@/preferences/preferences';
+import { fontFamilyForClass } from '@/theme/fonts';
 import { Slot } from '@rn-primitives/slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
@@ -68,6 +70,7 @@ function Text({
   className,
   asChild = false,
   variant = 'default',
+  style,
   ...props
 }: React.ComponentProps<typeof RNText> &
   React.RefAttributes<typeof RNText> &
@@ -75,10 +78,18 @@ function Text({
     asChild?: boolean;
   }) {
   const textClass = React.useContext(TextClassContext);
+  const locale = usePreferences((state) => state.locale);
   const Component = asChild ? Slot : RNText;
+  const classes = cn(textVariants({ variant }), textClass, className);
+  // Bundled fonts register one family per weight, so the family carries the weight.
+  const fontStyle = {
+    fontFamily: fontFamilyForClass(classes, locale),
+    fontWeight: 'normal' as const,
+  };
   return (
     <Component
-      className={cn(textVariants({ variant }), textClass, className)}
+      className={classes}
+      style={[fontStyle, style]}
       role={variant ? ROLE[variant] : undefined}
       aria-level={variant ? ARIA_LEVEL[variant] : undefined}
       {...props}

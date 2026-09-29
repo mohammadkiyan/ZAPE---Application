@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  // `dark:` variants in owned primitives follow the clock-theme tone (set by ToneProvider), never the OS.
   darkMode: 'class',
   content: ['./src/**/*.{js,ts,tsx}'],
 
@@ -23,22 +24,21 @@ module.exports = {
         'accent-foreground': 'hsl(var(--accent-foreground))',
         destructive: 'hsl(var(--destructive))',
         'destructive-foreground': 'hsl(var(--destructive-foreground))',
-        success: 'hsl(var(--success))',
-        warning: 'hsl(var(--warning))',
-        info: 'hsl(var(--info))',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
-        maroon: 'hsl(var(--maroon))',
-        mist: 'hsl(var(--mist))',
-        void: 'hsl(var(--void))',
+        subtle: 'hsl(var(--subtle))',
+        faint: 'hsl(var(--faint))',
+        line: 'hsl(var(--line))',
+        edge: 'hsl(var(--edge))',
+        thread: '#65001c',
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
-      fontFamily: { sans: ['Vazirmatn'], latin: ['Inter'], display: ['CormorantGaramond'] },
+      fontFamily: { sans: ['NotoSansArabic'], latin: ['Inter'] },
     },
   },
   plugins: [require('tailwindcss-animate')],
