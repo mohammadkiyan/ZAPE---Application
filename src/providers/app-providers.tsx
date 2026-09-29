@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useColorScheme as useNativeWindColorScheme } from 'nativewind';
 import { useFonts } from 'expo-font';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { reloadAppAsync } from 'expo';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -19,6 +20,8 @@ import { resolveTheme } from '@/theme/theme';
 import { NAV_THEME } from '@/lib/theme';
 
 void SplashScreen.preventAutoHideAsync();
+
+const DIRECTION_RELOAD_ATTEMPT_KEY = 'zape.direction-reload-attempt';
 
 export function AppProviders({ children }: PropsWithChildren) {
   const [queryClient] = useState(() => new QueryClient());
@@ -58,10 +61,37 @@ export function AppHydrationGate({ children }: PropsWithChildren) {
     void i18n.changeLanguage(locale);
   }, [locale]);
   useEffect(() => {
-    if (!hydrated || !needsDirectionReload || directionReloadFailed) return;
-    I18nManager.allowRTL(true);
-    I18nManager.forceRTL(directionForLocale(locale) === 'rtl');
-    void reloadAppAsync().catch(() => setDirectionReloadFailed(true));
+    if (!hydrated) return;
+    if (!needsDirectionReload) {
+      void AsyncStorage.removeItem(DIRECTION_RELOAD_ATTEMPT_KEY)
+        .catch(() => undefined)
+        .then(() => setDirectionReloadFailed(false));
+      return;
+    }
+    if (directionReloadFailed) return;
+
+    let active = true;
+    void (async () => {
+      try {
+        const direction = directionForLocale(locale);
+        const previousAttempt = await AsyncStorage.getItem(DIRECTION_RELOAD_ATTEMPT_KEY);
+        if (!active) return;
+        if (previousAttempt === direction) {
+          setDirectionReloadFailed(true);
+          return;
+        }
+        await AsyncStorage.setItem(DIRECTION_RELOAD_ATTEMPT_KEY, direction);
+        if (!active) return;
+        I18nManager.allowRTL(true);
+        I18nManager.forceRTL(direction === 'rtl');
+        await reloadAppAsync();
+      } catch {
+        if (active) setDirectionReloadFailed(true);
+      }
+    })();
+    return () => {
+      active = false;
+    };
   }, [hydrated, locale, needsDirectionReload, directionReloadFailed]);
   useEffect(() => {
     if (

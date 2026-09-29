@@ -14,6 +14,37 @@ pnpm start
 
 With a configured native toolchain, run `pnpm android` or `pnpm ios` in another terminal to compile and launch the development client. Rebuild it after adding a native dependency. On Linux, `pnpm ios` cannot compile; use a macOS/Xcode machine. Android compilation also needs a JDK and Android SDK.
 
+## Live changes on a physical iPhone
+
+The App Store version of Expo Go cannot run this SDK 57 project. Install a ZAPE development build once, then use Metro for live JavaScript changes. This route requires an active Apple Developer Program membership; EAS builds the iOS app in the cloud, so a Mac is not required.
+
+1. Register the iPhone and follow the Apple sign-in and device-profile prompts:
+
+   ```bash
+   pnpm dlx eas-cli@latest device:create
+   ```
+
+2. Build the development client, then open the resulting installation link on the registered iPhone. Enable iOS Developer Mode if prompted.
+
+   ```bash
+   pnpm dlx eas-cli@latest build --platform ios --profile development
+   ```
+
+3. With the iPhone and computer on the same Wi-Fi, start Metro and scan its QR code with the installed **ZAPE** app, not Expo Go:
+
+   ```bash
+   pnpm start
+   ```
+
+If the phone cannot reach the computer over Wi-Fi, install Expo's tunnel helper once and start Metro through a tunnel instead:
+
+```bash
+npm install --global @expo/ngrok@^4.1.0
+pnpm exec expo start --dev-client --tunnel --clear
+```
+
+Keep Metro running to see JavaScript edits refresh on the phone. Rebuild only when native dependencies or native configuration change. EAS is linked to the `@kiyanof/zape` project; keep Apple credentials and signing files out of this repository. Keep internal build installation links private, because anyone with a link may be able to open it.
+
 ## Configuration
 
 The only public setting is `EXPO_PUBLIC_API_BASE_URL` in `.env`. It is optional for the readiness screen and must be a valid URL when present. Use `http://10.0.2.2:<port>` for an Android emulator, `http://localhost:<port>` for an iOS simulator, and your computer's reachable LAN IP or HTTPS address for a physical phone. `EXPO_PUBLIC_*` variables are embedded in the app bundle: never put credentials there.
@@ -39,7 +70,7 @@ pnpm run bundle:ios
 pnpm run prebuild:clean
 ```
 
-`check` runs Prettier, ESLint, strict TypeScript, Jest/React Native Testing Library, Expo dependency validation, Expo Doctor, and React Native Reusables Doctor. `prebuild:clean` regenerates both native projects and discards any generated native edits; `ios/` and `android/` remain ignored. JavaScript bundle export and native prebuild work on Linux, but iOS compilation requires macOS/Xcode. No EAS Build, Submit, Update, or hosted CI is configured in this phase.
+`check` runs Prettier, ESLint, strict TypeScript, Jest/React Native Testing Library, Expo dependency validation, Expo Doctor, and React Native Reusables Doctor. `prebuild:clean` regenerates both native projects and discards any generated native edits; `ios/` and `android/` remain ignored. JavaScript bundle export and native prebuild work on Linux. The EAS development profile can build iOS in the cloud; local iOS compilation requires macOS/Xcode. No EAS Submit, Update, or hosted CI is configured.
 
 To add one owned UI primitive, run `pnpm dlx @react-native-reusables/cli@0.7.1 add <component> --path src/components/ui --styling-library nativewind`, then `pnpm run ui:doctor`. Do not use `add --all` or introduce a parallel component system.
 
