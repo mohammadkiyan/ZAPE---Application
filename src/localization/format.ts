@@ -47,6 +47,20 @@ export function formatNumber(value: number, locale: AppLocale): string {
   return localizeDigits(value, locale);
 }
 
+/** Folds Persian (۰–۹) and Arabic-Indic (٠–٩) digits to ASCII, e.g. typed on a Persian keyboard. */
+export function toAsciiDigits(value: string): string {
+  return value
+    .replace(/[۰-۹]/g, (digit) => String(digit.charCodeAt(0) - 0x06f0))
+    .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 0x0660));
+}
+
+/** A short countdown, e.g. «۰:۴۲» / "0:42". */
+export function formatCountdown(totalSeconds: number, locale: AppLocale): string {
+  const seconds = Math.max(0, Math.ceil(totalSeconds));
+  const text = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+  return localizeDigits(text, locale);
+}
+
 function isGregorianLeap(year: number): boolean {
   return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
 }

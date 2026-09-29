@@ -43,6 +43,25 @@ describe('app hydration gate', () => {
     expect(SplashScreen.hideAsync).toHaveBeenCalled();
   });
 
+  it('keeps the splash until registered hydration tasks settle, even when one fails', async () => {
+    let finish!: () => void;
+    const slow = jest.fn(() => new Promise<void>((resolve) => (finish = resolve)));
+    const failing = jest.fn(async () => Promise.reject(new Error('keychain locked')));
+    const result = render(
+      <AppHydrationGate hydrationTasks={[slow, failing]}>
+        <Text>ready child</Text>
+      </AppHydrationGate>
+    );
+    await waitFor(() => expect(preferencesStore.getState().hydrated).toBe(true));
+    expect(slow).toHaveBeenCalledTimes(1);
+    expect(result.queryByText('ready child')).toBeNull();
+    expect(SplashScreen.hideAsync).not.toHaveBeenCalled();
+
+    await act(async () => finish());
+    await waitFor(() => expect(result.getByText('ready child')).toBeTruthy());
+    expect(SplashScreen.hideAsync).toHaveBeenCalled();
+  });
+
   it('loads the bundled Noto Sans Arabic and Inter weights before hiding the splash', async () => {
     jest.mocked(useFonts).mockReturnValue([false, null]);
     const result = render(

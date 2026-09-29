@@ -72,4 +72,12 @@ describe('mock tools', () => {
     await waitFor(() => expect(result.getByText('Mock data was reset.')).toBeTruthy());
     expect((await mockStore.load()).partnerNote).toBeUndefined();
   });
+
+  it('shows the fixed mock sign-in code and the session controls', () => {
+    runtime.__DEV__ = true;
+    const result = render(<MockControlsSheet backend="mock" />, { wrapper: Wrapper });
+    expect(result.getByTestId('mock-otp-code')).toHaveTextContent('Mock sign-in code: 000000');
+    expect(result.getByText('Expire my session')).toBeTruthy();
+    expect(result.getByText('Expire my access token')).toBeTruthy();
+  });
 });

@@ -38,6 +38,21 @@ describe('generic API client', () => {
     } satisfies Partial<ApiError>);
   });
 
+  it('keeps the machine-readable error code from the response body', async () => {
+    const api = createApiClient({
+      baseUrl: 'https://api.example.com',
+      fetcher: jest.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        text: async () => '{"message":"Wrong code","code":"otp_invalid"}',
+      }),
+    });
+    await expect(api.request('/auth/otp/verify')).rejects.toMatchObject({
+      status: 400,
+      serverCode: 'otp_invalid',
+    } satisfies Partial<ApiError>);
+  });
+
   it('normalizes invalid responses', async () => {
     const api = createApiClient({
       baseUrl: 'https://api.example.com',

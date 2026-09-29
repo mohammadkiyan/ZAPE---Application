@@ -33,13 +33,22 @@ const BUNDLED_FONTS = {
   [FONT_FAMILY.en[600]]: Inter_600SemiBold,
 };
 
-export function AppProviders({ children }: PropsWithChildren) {
+/** Async reads that must finish before the splash hides (e.g. the stored session). */
+export type HydrationTask = () => Promise<void>;
+const NO_TASKS: readonly HydrationTask[] = [];
+
+interface HydrationProps {
+  /** Registered by the root layout, so core providers never import features. Read once on mount. */
+  hydrationTasks?: readonly HydrationTask[];
+}
+
+export function AppProviders({ children, hydrationTasks }: PropsWithChildren<HydrationProps>) {
   const [queryClient] = useState(createQueryClient);
   useEffect(() => wireQueryManagers(), []);
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <AppHydrationGate>
+        <AppHydrationGate hydrationTasks={hydrationTasks}>
           <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
         </AppHydrationGate>
       </SafeAreaProvider>
@@ -47,10 +56,16 @@ export function AppProviders({ children }: PropsWithChildren) {
   );
 }
 
-export function AppHydrationGate({ children }: PropsWithChildren) {
+export function AppHydrationGate({
+  children,
+  hydrationTasks = NO_TASKS,
+}: PropsWithChildren<HydrationProps>) {
   const [directionReloadFailed, setDirectionReloadFailed] = useState(false);
+  const [initialTasks] = useState(hydrationTasks);
+  const [tasksDone, setTasksDone] = useState(initialTasks.length === 0);
   const [fontsLoaded, fontError] = useFonts(BUNDLED_FONTS);
-  const hydrated = usePreferences((state) => state.hydrated);
+  const preferencesHydrated = usePreferences((state) => state.hydrated);
+  const hydrated = preferencesHydrated && tasksDone;
   const locale = usePreferences((state) => state.locale);
   const clockTheme = usePreferences((state) => state.clockTheme);
   const needsDirectionReload = I18nManager.isRTL !== (directionForLocale(locale) === 'rtl');
@@ -58,6 +73,17 @@ export function AppHydrationGate({ children }: PropsWithChildren) {
   useEffect(() => {
     void preferencesStore.getState().hydrate();
   }, []);
+  useEffect(() => {
+    if (initialTasks.length === 0) return;
+    let active = true;
+    // A failed task must not trap the app behind its splash; each task owns its fallback.
+    void Promise.allSettled(initialTasks.map((task) => task())).then(() => {
+      if (active) setTasksDone(true);
+    });
+    return () => {
+      active = false;
+    };
+  }, [initialTasks]);
   useEffect(() => {
     void i18n.changeLanguage(locale);
   }, [locale]);

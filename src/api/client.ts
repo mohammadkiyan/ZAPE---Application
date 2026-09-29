@@ -11,14 +11,17 @@ export type ApiErrorCode =
 
 export class ApiError extends Error {
   readonly name = 'ApiError';
+  /** The machine-readable `code` from an error response body, e.g. `otp_invalid`. */
+  readonly serverCode?: string;
   constructor(
     message: string,
     readonly code: ApiErrorCode,
     readonly status?: number,
     readonly requestId?: string,
-    options?: ErrorOptions
+    options?: ErrorOptions & { serverCode?: string }
   ) {
     super(message, options);
+    this.serverCode = options?.serverCode;
   }
 }
 
@@ -142,7 +145,11 @@ export function createApiClient(config: ApiClientOptions): ApiClient {
             typeof data.message === 'string'
               ? data.message
               : `Request failed (${response.status})`;
-          throw new ApiError(message, 'http_error', response.status, requestId);
+          const serverCode =
+            data && typeof data === 'object' && 'code' in data && typeof data.code === 'string'
+              ? data.code
+              : undefined;
+          throw new ApiError(message, 'http_error', response.status, requestId, { serverCode });
         }
         if (options.schema) {
           const result = options.schema.safeParse(data);

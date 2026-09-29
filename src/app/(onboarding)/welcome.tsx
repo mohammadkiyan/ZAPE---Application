@@ -1,5 +1,5 @@
-import { WelcomeSkeleton } from '@/features/shell/welcome-skeleton';
+import { WelcomeScreen } from '@/features/onboarding/welcome-screen';
 
 export default function Welcome() {
-  return <WelcomeSkeleton />;
+  return <WelcomeScreen />;
 }

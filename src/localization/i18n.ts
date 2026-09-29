@@ -3,7 +3,7 @@ import { initReactI18next } from 'react-i18next';
 import { fa } from './resources/fa';
 import { en } from './resources/en';
 
-export const NAMESPACES = ['common', 'shell'] as const;
+export const NAMESPACES = ['common', 'onboarding', 'shell'] as const;
 
 declare module 'i18next' {
   interface CustomTypeOptions {

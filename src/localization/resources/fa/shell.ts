@@ -25,6 +25,7 @@ export const shell = {
     resetDone: 'داده‌های آزمایشی بازنشانی شد.',
     noActions: 'هنوز کنشی برای همراه ثبت نشده است.',
     partnerActions: 'کنش‌های همراه',
+    signInCode: 'کد ورود آزمایشی: {{code}}',
   },
   configError: {
     title: 'پیکربندی ناقص است',

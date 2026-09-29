@@ -10,11 +10,13 @@ import Status from '@/app/(main)/(tabs)/status';
 import Note from '@/app/(main)/(tabs)/note';
 import More from '@/app/(main)/(tabs)/more';
 import { preferencesStore } from '@/preferences/preferences';
+import { seedOnboarded } from '@/testing/session';
 import { TestProviders, setTestLocale } from '@/testing/test-providers';
 import { SecondaryScreen } from './screen-header';
 
 function TestRoot() {
   const client = new QueryClient({ defaultOptions: { queries: { gcTime: Infinity } } });
+  seedOnboarded(client);
   return (
     <QueryClientProvider client={client}>
       <TestProviders tone="stored">

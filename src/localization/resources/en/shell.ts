@@ -28,6 +28,7 @@ export const shell: Strings<typeof fa> = {
     resetDone: 'Mock data was reset.',
     noActions: 'No partner actions are registered yet.',
     partnerActions: 'Partner actions',
+    signInCode: 'Mock sign-in code: {{code}}',
   },
   configError: {
     title: 'Configuration incomplete',

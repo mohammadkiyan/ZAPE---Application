@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { runtimeConfig, type Backend } from '@/config/runtime-config';
-import { resetMockBackend } from '@/api/mock';
+import { MOCK_OTP_CODE, resetMockBackend } from '@/api/mock';
 import { listPartnerControls, runPartnerControl } from '@/api/mock/partner-controls';
 import { usePreferences } from '@/preferences/preferences';
 
@@ -45,6 +45,9 @@ export function MockControlsSheet({ backend }: { backend?: Backend }) {
     <ScrollView contentContainerClassName="gap-4 p-6" testID="mock-controls">
       <Text accessibilityRole="header" className="text-xl font-semibold">
         {t('mock.controls')}
+      </Text>
+      <Text testID="mock-otp-code" className="text-sm text-muted-foreground">
+        {t('mock.signInCode', { code: MOCK_OTP_CODE })}
       </Text>
       <View className="gap-2">
         <Text className="text-sm text-muted-foreground">{t('mock.partnerActions')}</Text>

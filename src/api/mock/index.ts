@@ -1,4 +1,5 @@
 import './handlers/health';
+import './handlers/auth';
 import { createMockFetcher } from './router';
 import { mockStore } from './state';
 import { clearSession } from '../session';
@@ -15,6 +16,7 @@ export const mockFetcher = createMockFetcher({
 export { MockHttpError, registerMockRoute } from './router';
 export type { MockHandler, MockRequest, MockResponse } from './router';
 export { createSeedState, mockStore, type MockState } from './state';
+export { MOCK_OTP_CODE, MOCK_SEED_PHONE } from './handlers/auth';
 
 /** Restores the seed scenario and signs the app out, as if freshly installed against the mock. */
 export async function resetMockBackend(): Promise<void> {

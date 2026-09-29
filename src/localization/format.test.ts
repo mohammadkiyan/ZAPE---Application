@@ -1,11 +1,13 @@
 import {
   formatClock,
+  formatCountdown,
   formatDate,
   formatNumber,
   formatRelative,
   gregorianToJalali,
   gregorianToJalaliArithmetic,
   jalaliToGregorian,
+  toAsciiDigits,
   toPersianDigits,
 } from './format';
 
@@ -59,5 +61,16 @@ describe('locale formatting', () => {
     expect(formatRelative(120, 'fa')).toBe('۲ ساعت پیش');
     expect(formatRelative(120, 'en')).toBe('2 hours ago');
     expect(formatRelative(120, 'en', { compact: true })).toBe('2h ago');
+  });
+
+  it('folds Persian and Arabic-Indic digits to ASCII', () => {
+    expect(toAsciiDigits('۰۹۱۲ ۳۴۵ ٦٧٨٩')).toBe('0912 345 6789');
+  });
+
+  it('formats a resend countdown', () => {
+    expect(formatCountdown(42, 'fa')).toBe('۰:۴۲');
+    expect(formatCountdown(60, 'en')).toBe('1:00');
+    expect(formatCountdown(41.2, 'en')).toBe('0:42');
+    expect(formatCountdown(-3, 'en')).toBe('0:00');
   });
 });
