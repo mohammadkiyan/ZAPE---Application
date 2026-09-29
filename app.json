@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "ZAPE",
+    "slug": "zape",
+    "version": "1.0.0",
+    "scheme": "zape",
+    "platforms": ["ios", "android"],
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-localization",
+      "expo-secure-store",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "backgroundColor": "#F0F1F1"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "house.zape.app",
+      "requireFullScreen": true
+    },
+    "android": {
+      "package": "house.zape.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F0F1F1"
+      }
+    }
+  }
+}
