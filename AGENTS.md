@@ -11,6 +11,7 @@ Standalone Expo SDK 57 iOS/Android app. Use Node 22.22.3 and pnpm 9.15.9.
 - `pnpm run check` — format, lint, typecheck, Jest, Expo dependency/doctor, and Reusables checks.
 - `pnpm run bundle:android && pnpm run bundle:ios` — prove both JS bundles without native toolchains.
 - `pnpm run prebuild:clean` — regenerate ignored native projects; this discards generated native edits.
+- `pnpm exec openspec list` — list active OpenSpec changes; propose/apply/archive via the `openspec-*` skills in `.claude/skills` and `.agents/skills`.
 
 ## Implementation rules
 

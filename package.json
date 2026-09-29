@@ -70,6 +70,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@fission-ai/openspec": "1.13.2",
     "@react-native/metro-config": "0.86.3",
     "@testing-library/react-native": "^13.3.3",
     "@types/jest": "^29.5.14",
