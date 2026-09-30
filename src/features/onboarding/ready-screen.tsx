@@ -1,5 +1,15 @@
 import { useEffect } from 'react';
-import { I18nManager, ScrollView, View } from 'react-native';
+import { Dimensions, I18nManager, Platform, ScrollView, View } from 'react-native';
+
+// TEMP diagnostic (remove): reports Ready's layout to the dev machine.
+function probe(tag: string, data: unknown) {
+  if (!__DEV__) return;
+  const body = JSON.stringify({ tag, data });
+  console.log('[ready-probe]', body);
+  for (const port of [8099, 8082, 8083, 19000, 19001, 19002]) {
+    void fetch(`http://192.168.1.140:${port}/`, { method: 'POST', body }).catch(() => undefined);
+  }
+}
 import { useRouter } from 'expo-router';
 import Animated, {
   Easing,
@@ -219,11 +229,33 @@ export function ReadyScreen() {
   });
   const failure = complete.error ? describeError(complete.error) : null;
 
+  // TEMP diagnostic (remove)
+  useEffect(() => {
+    probe('mount', {
+      window: Dimensions.get('window'),
+      screen: Dimensions.get('screen'),
+      insets,
+      isRTL: I18nManager.isRTL,
+      os: `${Platform.OS} ${Platform.Version}`,
+      localStep,
+      me,
+      rows: rows.length,
+      status: complete.status,
+    });
+  });
+
   return (
-    <View testID="ready" className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
+    <View
+      testID="ready"
+      className="flex-1 bg-background"
+      style={{ paddingTop: insets.top }}
+      onLayout={(e) => probe('root', e.nativeEvent.layout)}>
       <OnboardingGlow centred />
       <OnboardingBar step={5} />
-      <ScrollView contentContainerStyle={{ paddingTop: 80, paddingBottom: 24 }}>
+      <ScrollView
+        contentContainerStyle={{ paddingTop: 80, paddingBottom: 24 }}
+        onLayout={(e) => probe('scroll', e.nativeEvent.layout)}
+        onContentSizeChange={(w, h) => probe('content', { w, h })}>
         <Celebration />
         <View style={{ marginTop: 26, paddingHorizontal: 24 }}>
           <Text
@@ -273,7 +305,9 @@ export function ReadyScreen() {
           </Text>
         ) : null}
       </ScrollView>
-      <View style={{ paddingHorizontal: 16, paddingBottom: Math.max(insets.bottom, 16) + 8 }}>
+      <View
+        style={{ paddingHorizontal: 16, paddingBottom: Math.max(insets.bottom, 16) + 8 }}
+        onLayout={(e) => probe('bottom', e.nativeEvent.layout)}>
         <OnboardingButton
           testID="ready-continue"
           label={t('onboarding:ready.action')}

@@ -19,11 +19,13 @@ import type { MockState } from '../state';
 export const MOCK_OTP_CODE = '000000';
 /** The canvas's «محمد», an existing account that has finished onboarding. */
 export const MOCK_SEED_PHONE = '+989121234567';
+/** The canvas relationship the seed account belongs to. */
+export const MOCK_CANVAS_RELATIONSHIP_ID = 'RLT-4K7Q-92MD';
 export const OTP_RESEND_AFTER_SEC = 60;
 export const OTP_EXPIRES_IN_SEC = 600;
 export const OTP_MAX_ATTEMPTS = 5;
 
-interface MockAccount {
+export interface MockAccount {
   id: string;
   phoneNumber: string;
   name: string | null;
@@ -64,7 +66,7 @@ export function mockAuth(state: MockState): MockAuthSlice {
           phoneNumber: MOCK_SEED_PHONE,
           name: state.user.name,
           email: state.user.email,
-          relationship: { id: 'rel-canvas', status: 'active' },
+          relationship: { id: MOCK_CANVAS_RELATIONSHIP_ID, status: 'active' },
           onboardingCompletedAt: state.relationship.startedAt,
         },
       },
@@ -105,7 +107,7 @@ function toMe(account: MockAccount): Me {
 }
 
 /** Resolves the bearer token to its account, answering 401 like the gateway does. */
-function authorize(request: MockRequest, state: MockState): MockAccount {
+export function authorize(request: MockRequest, state: MockState): MockAccount {
   const auth = mockAuth(state);
   const header = request.headers.Authorization ?? request.headers.authorization ?? '';
   const session = auth.sessions[header.replace(/^Bearer /, '')];

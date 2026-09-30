@@ -28,7 +28,7 @@ RelTime is built around one shared thing: the time two people have been together
 
 ## Impact
 
-- **Code**: `src/features/relationship`, `src/features/relationship-clock`, `src/features/home`; routes `(onboarding)/relationship/{index,create,invite,join}.tsx`, `(main)/relationship.tsx`; the Home and Clock tabs.
+- **Code**: `src/features/relationship`, `src/features/relationship-clock`, `src/features/home`; routes `(onboarding)/start-relationship/{index,create,invite,join}.tsx` (not `relationship/`, which would share the URL `/relationship` with the Relationship screen), `(main)/relationship.tsx` and `(main)/invite.tsx` (Home's resend); the Home and Clock tabs.
 - **API contract (new)**: `POST /relationships`, `GET /relationships/current`, `POST /relationships/current/invites`, `GET /invites/{code}` (preview), `POST /invites/{code}/accept` and `POST /relationships/current/end`. `GET /me` gains `relationship`.
 - **Mock**: partner controls "Partner joins with the invite" and "Partner ends the relationship".
 - **Depends on**: `add-app-foundation` and `add-onboarding-and-auth`.

@@ -1,4 +1,5 @@
 import type { Me } from '@/api/contracts/auth';
+import '@/features/relationship/onboarding-step';
 import { entryHref, progressFor, resolveEntry, stepAfter, type EntryInput } from './resolve-entry';
 import { ONBOARDING_STEPS, registerOnboardingStep, type OnboardingStep } from './steps';
 
@@ -20,14 +21,7 @@ function me(
 /** The full journey once the later changes register their steps. */
 const steps: OnboardingStep[] = [
   ONBOARDING_STEPS.find((s) => s.id === 'account')!,
-  {
-    id: 'relationship',
-    order: 20,
-    progress: 2,
-    route: '/relationship' as never,
-    mandatory: true,
-    isComplete: ({ me: m }) => m.relationship !== null,
-  },
+  ONBOARDING_STEPS.find((s) => s.id === 'relationship')!,
   {
     id: 'device',
     order: 30,
@@ -46,7 +40,7 @@ const steps: OnboardingStep[] = [
   },
 ];
 
-const inRelationship = { relationship: { id: 'r1', status: 'active' } };
+const inRelationship = { relationship: { id: 'r1', status: 'active' as const } };
 
 describe('resolveEntry', () => {
   it.each<[string, Omit<EntryInput, 'steps'>, string]>([
@@ -124,7 +118,37 @@ describe('resolveEntry', () => {
     ],
     [
       'completed onboarding wins over a stale resume point',
-      { session: 'signed-in', me: me({ completed: true }), localStep: 'name' },
+      { session: 'signed-in', me: me({ ...inRelationship, completed: true }), localStep: 'name' },
+      'main',
+    ],
+    [
+      'creator waiting for the partner',
+      {
+        session: 'signed-in',
+        me: me({ relationship: { id: 'r1', status: 'pending_partner' } }),
+        localStep: 'relationship',
+      },
+      'device',
+    ],
+    [
+      'relationship ended after onboarding',
+      {
+        session: 'signed-in',
+        me: me({
+          relationship: { id: 'r1', status: 'ended', endedBy: 'partner' },
+          completed: true,
+        }),
+        localStep: 'done',
+      },
+      'relationship',
+    ],
+    [
+      'new relationship after an ended one',
+      {
+        session: 'signed-in',
+        me: me({ relationship: { id: 'r2', status: 'pending_partner' }, completed: true }),
+        localStep: 'done',
+      },
       'main',
     ],
   ])('%s → %s', (_, input, expected) => {
@@ -132,13 +156,20 @@ describe('resolveEntry', () => {
   });
 
   it('goes to Ready when only the Account step is registered', () => {
-    expect(resolveEntry({ session: 'signed-in', me: me(), localStep: null })).toBe('ready');
+    expect(
+      resolveEntry({ session: 'signed-in', me: me(), localStep: null, steps: steps.slice(0, 1) })
+    ).toBe('ready');
+  });
+
+  it('registers the Relationship step as mandatory step 2', () => {
+    expect(ONBOARDING_STEPS.map((s) => s.id)).toEqual(['account', 'relationship']);
+    expect(ONBOARDING_STEPS[1]).toMatchObject({ order: 20, progress: 2, mandatory: true });
   });
 
   it('maps entries to routes and progress nodes', () => {
     expect(entryHref('welcome', steps)).toBe('/welcome');
     expect(entryHref('main', steps)).toBe('/');
-    expect(entryHref('relationship', steps)).toBe('/relationship');
+    expect(entryHref('relationship', steps)).toBe('/start-relationship');
     expect(progressFor('sign-in', steps)).toBe(1);
     expect(progressFor('relationship', steps)).toBe(2);
     expect(progressFor('ready', steps)).toBe(5);

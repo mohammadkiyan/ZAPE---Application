@@ -26,11 +26,11 @@ export function resolveEntry({
   if (session === 'signed-out') return localStep === 'account' ? 'sign-in' : 'welcome';
   // Offline launch: trust the last onboarding state seen on this phone.
   if (!me) return localStep === 'done' ? 'main' : 'loading';
-  if (me.onboardingCompletedAt) return 'main';
-  if (localStep === 'name' && !me.user.name?.trim()) return 'name';
-
   const context = { me, localStep };
   const missing = steps.find((step) => step.mandatory && !step.isComplete(context));
+  // A mandatory step can come undone after onboarding (an ended relationship).
+  if (me.onboardingCompletedAt) return missing?.id ?? 'main';
+  if (localStep === 'name' && !me.user.name?.trim()) return 'name';
   if (missing) return missing.id;
   if (localStep === 'ready') return 'ready';
   // Resume where the user was; steps skipped before it stay skipped.

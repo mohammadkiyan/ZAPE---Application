@@ -2,6 +2,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import { getApiClient } from '@/api/backend';
 import { signOut as signOutRemote } from '@/api/endpoints/auth';
 import { localStepStore } from '@/features/onboarding/local-step';
+import { rememberRelationship } from '@/features/relationship/relationship-cache';
 import { sessionStore } from './session-store';
 
 /**
@@ -12,6 +13,7 @@ import { sessionStore } from './session-store';
 export async function signOutLocally(queryClient: QueryClient): Promise<void> {
   // Not cancelQueries(): a reverted fetch would hand its caller the previous account's data.
   queryClient.clear();
+  rememberRelationship(null);
   await Promise.allSettled([sessionStore.getState().clear(), localStepStore.getState().clear()]);
 }
 

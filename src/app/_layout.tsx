@@ -4,12 +4,13 @@ import { PortalHost } from '@rn-primitives/portal';
 import { SessionBridge } from '@/features/auth/session-bridge';
 import { hydrateSession } from '@/features/auth/session-store';
 import { hydrateLocalStep } from '@/features/onboarding/local-step';
+import { hydrateRelationshipCache } from '@/features/relationship/relationship-cache';
 import { BackendGate } from '@/features/shell/configuration-error-screen';
 import { AppProviders } from '@/providers/app-providers';
 
 export const unstable_settings = { initialRouteName: '(main)' };
 
-const HYDRATION_TASKS = [hydrateSession, hydrateLocalStep];
+const HYDRATION_TASKS = [hydrateSession, hydrateLocalStep, hydrateRelationshipCache];
 
 export default function RootLayout() {
   return (

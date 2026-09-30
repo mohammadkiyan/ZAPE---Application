@@ -59,7 +59,10 @@ describe('session gate', () => {
     act(() => {
       client.setQueryData(
         ME_QUERY_KEY,
-        testMe({ onboardingCompletedAt: '2026-09-01T10:00:00.000Z' })
+        testMe({
+          relationship: { id: 'rel-1', status: 'active' },
+          onboardingCompletedAt: '2026-09-01T10:00:00.000Z',
+        })
       );
       sessionStore.setState({
         status: 'signed-in',
@@ -116,7 +119,13 @@ describe('session gate', () => {
     const getMe = jest.spyOn(authEndpoints, 'getMe').mockImplementation(
       () =>
         new Promise((resolve) => {
-          release = () => resolve(testMe({ onboardingCompletedAt: '2026-09-01T10:00:00.000Z' }));
+          release = () =>
+            resolve(
+              testMe({
+                relationship: { id: 'rel-1', status: 'active' },
+                onboardingCompletedAt: '2026-09-01T10:00:00.000Z',
+              })
+            );
         })
     );
     const result = renderRouter(routes, { initialUrl: '/note' });

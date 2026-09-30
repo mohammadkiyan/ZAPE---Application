@@ -19,6 +19,22 @@ const JALALI_MONTHS = [
   'اسفند',
 ];
 
+/** Gregorian month names in Persian, for relationships kept in the Gregorian calendar. */
+const GREGORIAN_MONTHS_FA = [
+  'ژانویه',
+  'فوریه',
+  'مارس',
+  'آوریل',
+  'مه',
+  'ژوئن',
+  'ژوئیه',
+  'اوت',
+  'سپتامبر',
+  'اکتبر',
+  'نوامبر',
+  'دسامبر',
+];
+
 const GREGORIAN_MONTHS = [
   'January',
   'February',
@@ -157,19 +173,50 @@ export function gregorianToJalali(gy: number, gm: number, gd: number): DateParts
   return gregorianToJalaliArithmetic(gy, gm, gd);
 }
 
+export type CalendarSystem = 'jalali' | 'gregorian';
+
+const JALALI_MONTHS_EN = [
+  'Farvardin',
+  'Ordibehesht',
+  'Khordad',
+  'Tir',
+  'Mordad',
+  'Shahrivar',
+  'Mehr',
+  'Aban',
+  'Azar',
+  'Dey',
+  'Bahman',
+  'Esfand',
+];
+
+/** Month names of `calendar` in `locale`, e.g. for a date picker. */
+export function monthNames(calendar: CalendarSystem, locale: AppLocale): readonly string[] {
+  if (calendar === 'jalali') return locale === 'fa' ? JALALI_MONTHS : JALALI_MONTHS_EN;
+  return locale === 'fa' ? GREGORIAN_MONTHS_FA : GREGORIAN_MONTHS;
+}
+
+/** `YYYY-MM-DD` → Gregorian date parts. */
+export function parseIsoDate(date: string): DateParts {
+  const [year, month, day] = date.split('-').map(Number) as DateParts;
+  return [year, month, day];
+}
+
 /**
- * Formats a Gregorian calendar date: Jalali with Persian month names and digits for `fa`
- * («۲۴ اسفند ۱۳۹۹»), Gregorian for `en` ("March 14, 2021").
+ * Formats a Gregorian calendar date. For `fa` it is Jalali with Persian month names and digits
+ * («۲۴ اسفند ۱۳۹۹»), or Gregorian with Persian names when `calendar` is `gregorian`
+ * («۱۴ مارس ۲۰۲۱»). `en` is always Gregorian ("March 14, 2021").
  */
 export function formatDate(
   [year, month, day]: DateParts,
   locale: AppLocale,
-  { withYear = true }: { withYear?: boolean } = {}
+  { withYear = true, calendar = 'jalali' }: { withYear?: boolean; calendar?: CalendarSystem } = {}
 ): string {
   if (locale === 'fa') {
-    const [jy, jm, jd] = gregorianToJalali(year, month, day);
-    const text = `${jd} ${JALALI_MONTHS[jm - 1]}${withYear ? ` ${jy}` : ''}`;
-    return toPersianDigits(text);
+    const [y, m, d] =
+      calendar === 'jalali' ? gregorianToJalali(year, month, day) : [year, month, day];
+    const names = calendar === 'jalali' ? JALALI_MONTHS : GREGORIAN_MONTHS_FA;
+    return toPersianDigits(`${d} ${names[m - 1]}${withYear ? ` ${y}` : ''}`);
   }
   return `${GREGORIAN_MONTHS[month - 1]} ${day}${withYear ? `, ${year}` : ''}`;
 }

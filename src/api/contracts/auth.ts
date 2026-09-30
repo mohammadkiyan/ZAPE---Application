@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { meRelationshipSchema } from './relationship';
 
 /** E.164, the only phone form the backend accepts (the same rule as zape.house). */
 export const e164Schema = z.string().regex(/^\+[1-9]\d{7,14}$/);
@@ -62,8 +63,8 @@ export const meSchema = z.object({
     phoneNumber: z.string().nullable(),
     email: z.string().nullable(),
   }),
-  /** Filled by `add-relationship`; null until the account belongs to a relationship. */
-  relationship: z.object({ id: z.string().min(1), status: z.string().min(1) }).nullable(),
+  /** Null until the account belongs to a relationship; kept, as `ended`, after one ends. */
+  relationship: meRelationshipSchema.nullable(),
   onboardingCompletedAt: z.iso.datetime().nullable(),
 });
 export type Me = z.infer<typeof meSchema>;

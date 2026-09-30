@@ -45,6 +45,8 @@ describe('locale formatting', () => {
     expect(formatDate([2021, 3, 14], 'fa', { withYear: false })).toBe('۲۴ اسفند');
     expect(formatDate([2021, 3, 14], 'en')).toBe('March 14, 2021');
     expect(formatDate([2021, 3, 14], 'en', { withYear: false })).toBe('March 14');
+    expect(formatDate([2021, 3, 14], 'fa', { calendar: 'gregorian' })).toBe('۱۴ مارس ۲۰۲۱');
+    expect(formatDate([2021, 3, 14], 'en', { calendar: 'jalali' })).toBe('March 14, 2021');
   });
 
   it('formats clock times', () => {

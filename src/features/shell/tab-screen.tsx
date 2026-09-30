@@ -14,6 +14,8 @@ export interface TabScreenProps {
   backdrop?: boolean;
   /** Trailing header slot, e.g. the Home status/offline chip. */
   headerAccessory?: ReactNode;
+  /** The tab title and skeleton line; off once a feature fills the tab. */
+  heading?: boolean;
   children?: ReactNode;
   footer?: ReactNode;
 }
@@ -33,11 +35,12 @@ function Wordmark() {
   );
 }
 
-/** Skeleton frame shared by the five tabs until their feature changes fill them. */
+/** Frame shared by the five tabs: backdrop, wordmark header and a scroll area above the tab bar. */
 export function TabScreen({
   tab,
   backdrop = false,
   headerAccessory,
+  heading = true,
   children,
   footer,
 }: TabScreenProps) {
@@ -63,12 +66,14 @@ export function TabScreen({
           <Wordmark />
           {headerAccessory}
         </View>
-        <View className="gap-2 px-4">
-          <Text accessibilityRole="header" className="text-2xl font-semibold leading-10">
-            {t(`tabs.${tab}`)}
-          </Text>
-          <Text className="leading-7 text-muted-foreground">{t('skeleton')}</Text>
-        </View>
+        {heading ? (
+          <View className="gap-2 px-4">
+            <Text accessibilityRole="header" className="text-2xl font-semibold leading-10">
+              {t(`tabs.${tab}`)}
+            </Text>
+            <Text className="leading-7 text-muted-foreground">{t('skeleton')}</Text>
+          </View>
+        ) : null}
         {children}
         {footer}
       </ScrollView>

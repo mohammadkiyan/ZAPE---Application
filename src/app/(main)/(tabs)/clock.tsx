@@ -1,10 +1,5 @@
-import { ClockStylePanel } from '@/features/clock-themes/clock-style-panel';
-import { TabScreen } from '@/features/shell/tab-screen';
+import { RelClockScreen } from '@/features/relationship-clock/rel-clock-screen';
 
 export default function RelClock() {
-  return (
-    <TabScreen tab="clock" backdrop>
-      <ClockStylePanel />
-    </TabScreen>
-  );
+  return <RelClockScreen />;
 }

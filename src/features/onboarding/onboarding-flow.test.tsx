@@ -12,6 +12,10 @@ import Name from '@/app/(onboarding)/name';
 import Ready from '@/app/(onboarding)/ready';
 import SignIn from '@/app/(onboarding)/sign-in';
 import Welcome from '@/app/(onboarding)/welcome';
+import StartRelationship from '@/app/(onboarding)/start-relationship/index';
+import CreateRelationship from '@/app/(onboarding)/start-relationship/create';
+import InvitePartner from '@/app/(onboarding)/start-relationship/invite';
+import JoinRelationship from '@/app/(onboarding)/start-relationship/join';
 import { MOCK_OTP_CODE, mockStore } from '@/api/mock';
 import { runPartnerControl } from '@/api/mock/partner-controls';
 import { SessionBridge } from '@/features/auth/session-bridge';
@@ -53,6 +57,10 @@ const routes = {
   '(onboarding)/sign-in': SignIn,
   '(onboarding)/name': Name,
   '(onboarding)/ready': Ready,
+  '(onboarding)/start-relationship/index': StartRelationship,
+  '(onboarding)/start-relationship/create': CreateRelationship,
+  '(onboarding)/start-relationship/invite': InvitePartner,
+  '(onboarding)/start-relationship/join': JoinRelationship,
 };
 
 /** A cold start: new query cache, session and resume point read back from storage. */
@@ -94,7 +102,7 @@ describe('onboarding against the mock backend', () => {
   });
   afterEach(() => client.clear());
 
-  it('signs up, names the account, finishes on Ready and lands on Home', async () => {
+  it('signs up, names the account, creates a relationship, finishes on Ready and lands on Home', async () => {
     const result = await launch();
     expect(await screen.findByTestId('welcome')).toBeTruthy();
 
@@ -104,8 +112,29 @@ describe('onboarding against the mock backend', () => {
 
     fireEvent.changeText(screen.getByTestId('name-input'), 'سارا');
     fireEvent.press(screen.getByRole('button', { name: 'ادامه' }));
+    expect(await screen.findByTestId('start-relationship', {}, { timeout: 4000 })).toBeTruthy();
+    expect(result.getPathname()).toBe('/start-relationship');
+
+    fireEvent.press(screen.getByTestId('choice-create'));
+    fireEvent.press(await screen.findByTestId('create-submit'));
+    expect(await screen.findByTestId('invite-relationship', {}, { timeout: 4000 })).toBeTruthy();
+    expect(await screen.findByTestId('invite-code', {}, { timeout: 4000 })).toBeTruthy();
+    expect(screen.getByTestId('invite-status')).toHaveTextContent('در انتظار پیوستن همراه…');
+
+    // The invite screen polls every 5 s, so the partner shows up without a manual refresh.
+    await act(async () => {
+      await runPartnerControl('relationship.partner-joins');
+    });
+    await waitFor(
+      () => expect(screen.getByTestId('invite-status')).toHaveTextContent('همراهتان پیوست.'),
+      { timeout: 8000 }
+    );
+    expect(screen.queryByTestId('invite-later')).toBeNull();
+
+    fireEvent.press(screen.getByTestId('invite-continue'));
     expect(await screen.findByTestId('ready', {}, { timeout: 4000 })).toBeTruthy();
     expect(screen.getByText('همه‌چیز آماده است.')).toBeTruthy();
+    expect(screen.getByTestId('ready-row-relationship')).toHaveTextContent(/^رابطه.*از /);
 
     fireEvent.press(screen.getByRole('button', { name: 'مشاهده زمان ما' }));
     await waitFor(() => expect(screen.getByTestId('tab-screen-home')).toBeTruthy(), {
@@ -113,7 +142,7 @@ describe('onboarding against the mock backend', () => {
     });
     expect(result.getPathname()).toBe('/');
     expect(await AsyncStorage.getItem('zape.onboarding.step')).toBe('done');
-  }, 20_000);
+  }, 30_000);
 
   it('resumes mid-flow after a relaunch, then goes back to Welcome when the session expires', async () => {
     const first = await launch();

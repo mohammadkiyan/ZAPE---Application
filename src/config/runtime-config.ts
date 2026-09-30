@@ -46,10 +46,7 @@ export function resolveDevApiBaseUrl(
 
 export function parseRuntimeConfig(
   env: Record<string, string | undefined>,
-  {
-    development = __DEV__,
-    devServerHost,
-  }: { development?: boolean; devServerHost?: string } = {}
+  { development = __DEV__, devServerHost }: { development?: boolean; devServerHost?: string } = {}
 ): RuntimeConfig {
   const parsed = publicConfigSchema.parse(env);
   const configured = parsed.EXPO_PUBLIC_API_BASE_URL;

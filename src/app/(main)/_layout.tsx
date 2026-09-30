@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { View } from 'react-native';
 import { Redirect, Stack, usePathname } from 'expo-router';
+import '@/features/relationship/onboarding-step';
 import { EntryPending } from '@/features/onboarding/entry-pending';
 import { entryHref } from '@/features/onboarding/resolve-entry';
 import { deferDeepLink, useEntry } from '@/features/onboarding/use-entry';
