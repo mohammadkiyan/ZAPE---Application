@@ -318,7 +318,7 @@ export function TimeDial({
   const R = c - 1;
   const geometry: Geometry = { c, R, variant, pointer: tone !== 'dark', size };
   const valueWidth = Math.min(Math.round(valueSize * 1.9), size - 16);
-  const valueTop = round(c - 4 - (persianValue ? 0.77 : 0.863) * valueSize);
+  const valueTop = round(c - 4 - (persianValue ? 0.37 : 0.863) * valueSize);
   const halo = {
     textShadowColor: P.bg,
     textShadowRadius: 4,
@@ -342,7 +342,7 @@ export function TimeDial({
             x={round(c - valueWidth / 2)}
             y={round(valueTop - 2)}
             width={valueWidth}
-            height={valueSize + 4}
+            height={valueSize + 6}
             rx={4}
             fill={P.bg}
             fillOpacity={0.6}

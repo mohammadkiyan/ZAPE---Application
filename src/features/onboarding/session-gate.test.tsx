@@ -137,4 +137,49 @@ describe('session gate', () => {
     expect(result.getPathname()).toBe('/note');
     getMe.mockRestore();
   });
+
+  it('keeps the loader until its logo motion is complete, however fast the account loads', async () => {
+    seedSession(client, { me: null });
+    sessionStore.setState({
+      status: 'signed-in',
+      credential: { accessToken: 'a', refreshToken: 'r' },
+    });
+    let reportBuilt!: () => void;
+    const loader = jest
+      .spyOn(
+        jest.requireMock<typeof import('@/components/brand/zape-loader')>(
+          '@/components/brand/zape-loader'
+        ),
+        'ZapeLoader'
+      )
+      .mockImplementation(({ onBuilt, testID }) => {
+        reportBuilt = onBuilt!;
+        return <Text testID={testID}>ident</Text>;
+      });
+    let release!: () => void;
+    const getMe = jest.spyOn(authEndpoints, 'getMe').mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          release = () =>
+            resolve(
+              testMe({
+                relationship: { id: 'rel-1', status: 'active' },
+                onboardingCompletedAt: '2026-09-01T10:00:00.000Z',
+              })
+            );
+        })
+    );
+    renderRouter(routes, { initialUrl: '/' });
+    expect(await screen.findByTestId('entry-loader')).toBeTruthy();
+
+    await act(async () => release());
+    await waitFor(() => expect(client.getQueryData(ME_QUERY_KEY)).toBeTruthy());
+    expect(screen.getByTestId('entry-loader')).toBeTruthy();
+    expect(screen.queryByTestId('tab-screen-home')).toBeNull();
+
+    act(() => reportBuilt());
+    await waitFor(() => expect(screen.getByTestId('tab-screen-home')).toBeTruthy());
+    loader.mockRestore();
+    getMe.mockRestore();
+  });
 });

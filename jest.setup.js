@@ -25,3 +25,5 @@ jest.mock('react-native-reanimated/mock', () => {
   };
 });
 jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
+// Jest runs no animation frames, so the ident reports its build complete as soon as it mounts.
+jest.mock('@/components/brand/zape-loader', () => require('./src/testing/zape-loader-stub'));

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import type { Href } from 'expo-router';
 import { useMe } from '@/features/auth/use-me';
 import { useSession } from '@/features/auth/session-store';
+import { useIdentHold } from './ident-hold';
 import { localStepStore, useLocalStep } from './local-step';
 import { resolveEntry, type Entry } from './resolve-entry';
 
@@ -10,8 +11,11 @@ export function useEntry() {
   const session = useSession((state) => state.status);
   const localStep = useLocalStep();
   const meQuery = useMe();
+  const holding = useIdentHold();
   const me = session === 'signed-in' ? meQuery.data : undefined;
-  const entry: Entry = resolveEntry({ session, me, localStep });
+  const resolved = resolveEntry({ session, me, localStep });
+  // Once the loader appears it stays until its logo motion is complete, however fast the load.
+  const entry: Entry = holding ? 'loading' : resolved;
   const completed = Boolean(me?.onboardingCompletedAt);
 
   useEffect(() => {

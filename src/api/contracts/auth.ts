@@ -10,7 +10,7 @@ export type OtpRequest = z.infer<typeof otpRequestSchema>;
 export const otpRequestResponseSchema = z.object({
   /** Opaque handle for this code; verification names it instead of the phone number. */
   flowId: z.string().min(1),
-  channel: z.enum(['sms', 'email']),
+  channel: z.enum(['sms']),
   /** Where the code went, as the backend wants it shown (possibly masked). */
   destination: z.string().min(1),
   resendAfterSec: z.number().int().nonnegative(),

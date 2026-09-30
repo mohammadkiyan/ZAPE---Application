@@ -6,23 +6,31 @@ import { secureValueStore, type SecureValueStore } from '@/storage/secure-value-
 /** SecureStore key for the session credential. Nothing else about the session is persisted. */
 export const SESSION_KEY = 'zape.session';
 
-export type SessionStatus = 'unknown' | 'signed-out' | 'signed-in';
+export const SESSION_STATUSES = {
+  UNKNOWN: 'unknown' as const,
+  SIGNED_OUT: 'signed-out' as const,
+  SIGNED_IN: 'signed-in' as const,
+} as const;
+
+export type SessionStatus = (typeof SESSION_STATUSES)[keyof typeof SESSION_STATUSES];
 
 export interface SessionState {
   status: SessionStatus;
   credential?: SessionCredential;
-  /** Reads the stored credential once; an unreadable or corrupt value counts as signed out. */
+
+  /** In each application start, reads the stored credential once; an unreadable or corrupt value counts as signed out. */
   hydrate(): Promise<void>;
-  /** Stores a new or rotated credential and marks the session signed in. */
+
   setCredential(credential: SessionCredential): Promise<void>;
-  clear(): Promise<void>;
+  unsetCredential(): Promise<void>;
 }
 
 export function createSessionStore(storage: SecureValueStore = secureValueStore) {
   return createStore<SessionState>((set, get) => ({
     status: 'unknown',
     async hydrate() {
-      if (get().status !== 'unknown') return;
+      const current = get();
+      if (current.status !== 'unknown') return;
       try {
         const raw = await storage.read(SESSION_KEY);
         const parsed = raw ? sessionCredentialSchema.safeParse(JSON.parse(raw)) : undefined;
@@ -30,19 +38,20 @@ export function createSessionStore(storage: SecureValueStore = secureValueStore)
           set({ status: 'signed-in', credential: parsed.data });
           return;
         }
-        if (raw) await storage.clear(SESSION_KEY);
-      } catch {
+        if (raw) await current.unsetCredential();
+      } catch (error) {
+        console.error(error);
         // A failed read must not keep the splash up; the user signs in again.
+        await current.unsetCredential();
       }
-      set({ status: 'signed-out', credential: undefined });
     },
     async setCredential(credential) {
       await storage.write(SESSION_KEY, JSON.stringify(credential));
       set({ status: 'signed-in', credential });
     },
-    async clear() {
-      set({ status: 'signed-out', credential: undefined });
+    async unsetCredential() {
       await storage.clear(SESSION_KEY);
+      set({ status: 'signed-out', credential: undefined });
     },
   }));
 }

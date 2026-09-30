@@ -17,30 +17,32 @@ type Storage = Pick<typeof AsyncStorage, 'getItem' | 'setItem' | 'removeItem'>;
 
 export interface LocalStepState {
   step: LocalStep | null;
-  hydrated: boolean;
+  isHydrated: boolean;
   hydrate(): Promise<void>;
   /** Persists before resolving, so a reload right after still sees it. */
   setStep(step: LocalStep): Promise<void>;
-  clear(): Promise<void>;
+  unsetStep(): Promise<void>;
 }
 
 export function createLocalStepStore(storage: Storage = AsyncStorage) {
   return createStore<LocalStepState>((set, get) => ({
     step: null,
-    hydrated: false,
+    isHydrated: false,
     async hydrate() {
-      if (get().hydrated) return;
+      const current = get();
+      if (current.isHydrated) return;
       try {
-        set({ step: await storage.getItem(ONBOARDING_STEP_KEY), hydrated: true });
-      } catch {
-        set({ step: null, hydrated: true });
+        set({ step: await storage.getItem(ONBOARDING_STEP_KEY), isHydrated: true });
+      } catch (error) {
+        console.error(error);
+        await current.unsetStep();
       }
     },
     async setStep(step) {
       await storage.setItem(ONBOARDING_STEP_KEY, step);
       set({ step });
     },
-    async clear() {
+    async unsetStep() {
       set({ step: null });
       await storage.removeItem(ONBOARDING_STEP_KEY);
     },

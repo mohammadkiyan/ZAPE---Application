@@ -182,7 +182,7 @@ export function AccountScreen() {
   }
 
   function onBack() {
-    void localStepStore.getState().clear();
+    void localStepStore.getState().unsetStep();
     if (router.canGoBack()) router.back();
     else router.replace('/welcome');
   }

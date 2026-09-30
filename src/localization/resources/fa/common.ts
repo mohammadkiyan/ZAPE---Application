@@ -2,6 +2,7 @@ export const common = {
   back: 'بازگشت',
   backTo: 'بازگشت به {{origin}}',
   retry: 'تلاش دوباره',
+  loading: 'در حال بارگذاری زاپ',
   close: 'بستن',
   offline: 'آفلاین · ساعت همچنان می‌شمارد',
   reconnectToContinue: 'برای ادامه به اینترنت وصل شوید.',

@@ -3,6 +3,7 @@ import { ActivityIndicator, Pressable, View, useWindowDimensions } from 'react-n
 import Svg, { Defs, Ellipse, Path, RadialGradient, Stop } from 'react-native-svg';
 import { Text } from '@/components/ui/text';
 import { BURGUNDY } from '@/theme/clock-themes';
+import { Button } from '@/components/ui/button';
 
 /** The white canvas's soft burgundy and gray glows (canvas radial gradients). */
 export function OnboardingGlow({ centred = false }: { centred?: boolean }) {
@@ -60,33 +61,23 @@ export function OnboardingButton({
 }) {
   const inactive = disabled || busy;
   return (
-    <Pressable
+    <Button
       testID={testID}
       accessibilityRole="button"
       accessibilityState={{ disabled: inactive, busy }}
       disabled={inactive}
       onPress={onPress}
-      style={({ pressed }) => ({
-        height: 54,
-        borderRadius: 27,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: BURGUNDY,
-        experimental_backgroundImage:
-          'linear-gradient(180deg, #8a1638 0%, #65001c 58%, #5a0019 100%)',
-        boxShadow: '0 8px 20px rgba(101, 0, 28, 0.35)',
-        opacity: disabled ? 0.45 : pressed ? 0.9 : 1,
-      })}>
+      >
       {busy ? (
         <ActivityIndicator color="#ffffff" />
       ) : (
         <Text
-          className={latin ? 'font-latin font-medium' : 'font-medium'}
+          className={latin ? 'font-latin font-medium' : 'font-medium pt-2'}
           style={{ color: '#ffffff', fontSize: 16 }}>
           {label}
         </Text>
       )}
-    </Pressable>
+    </Button>
   );
 }
 

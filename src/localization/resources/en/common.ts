@@ -5,6 +5,7 @@ export const common: Strings<typeof fa> = {
   back: 'Back',
   backTo: 'Back to {{origin}}',
   retry: 'Try again',
+  loading: 'Loading ZAPE',
   close: 'Close',
   offline: 'Offline · the clock keeps counting',
   reconnectToContinue: 'Reconnect to the internet to continue.',

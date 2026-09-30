@@ -15,6 +15,7 @@ import { Thread } from '@/features/shell/thread';
 import { TimeDial } from '@/features/shell/time-dial';
 import { localStepStore } from './local-step';
 import { OnboardingButton, OnboardingGlow, Orb } from './onboarding-parts';
+import { Button } from '@/components/ui/button';
 
 const THREAD =
   'M-20 40C20 72 50 98 80 106C120 117 160 140 195 140C230 140 270 117 310 106C340 98 370 72 410 40';
@@ -108,29 +109,18 @@ function LanguageOption({
   onSelect: () => void;
 }) {
   return (
-    <Pressable
+    <Button
+      variant={'outline'}
+      size={'default'}
       testID={`language-${locale}`}
       accessibilityRole="radio"
       accessibilityState={{ checked: selected }}
       accessibilityLanguage={locale}
       onPress={onSelect}
-      style={{
-        flex: 1,
-        height: 64,
-        paddingHorizontal: 18,
-        borderRadius: 20,
-        borderWidth: selected ? 1.5 : 1,
-        borderColor: selected ? BURGUNDY : 'rgba(21, 21, 21, 0.08)',
-        backgroundColor: '#ffffff',
-        boxShadow: selected
-          ? '0 0 0 4px rgba(101, 0, 28, 0.08), 0 12px 30px rgba(101, 0, 28, 0.12)'
-          : '0 1px 2px rgba(21, 21, 21, 0.05), 0 12px 30px rgba(21, 21, 21, 0.07)',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
+      className='flex-1'
+     >
       <Text
-        className={locale === 'en' ? 'font-latin font-semibold' : 'font-semibold'}
+        className={locale === 'en' ? 'font-latin font-semibold' : 'font-semibold pt-2'}
         style={{ fontSize: 16 }}>
         {label}
       </Text>
@@ -147,7 +137,7 @@ function LanguageOption({
           <Icon as={Check} size={12} color="#ffffff" strokeWidth={2.6} />
         </View>
       ) : null}
-    </Pressable>
+    </Button>
   );
 }
 
@@ -168,7 +158,7 @@ export function WelcomeScreen() {
     await preferencesStore.getState().setLocale(selected);
     if (reloads) return;
     setBusy(false);
-    router.push('/sign-in');
+    router.navigate('/sign-in');
   }
 
   return (
@@ -176,7 +166,7 @@ export function WelcomeScreen() {
       <OnboardingGlow />
       <ScrollView contentContainerStyle={{ paddingTop: 16, paddingBottom: 24 }}>
         <Wordmark />
-        <View style={{ marginTop: 24 }}>
+        <View>
           <Illustration locale={locale} />
         </View>
         <View style={{ marginTop: 24, paddingHorizontal: 24 }}>
@@ -186,23 +176,14 @@ export function WelcomeScreen() {
             style={{ fontSize: 26, lineHeight: 42 }}>
             {t('welcome.headline')}
           </Text>
-          <Text
-            className="text-center text-muted-foreground"
-            style={{ marginTop: 8, fontSize: 16, lineHeight: 28 }}>
-            {t('welcome.body')}
-          </Text>
         </View>
-        <View style={{ marginTop: 32, paddingHorizontal: 16 }}>
-          <Text
-            nativeID="welcome-language-label"
-            className="font-medium text-muted-foreground"
-            style={{ paddingHorizontal: 16, fontSize: 13, lineHeight: 20 }}>
-            {t('welcome.language')}
-          </Text>
+      </ScrollView>
+      <View style={{ paddingHorizontal: 16, paddingBottom: Math.max(insets.bottom, 16) + 8 }}>
+      <View style={{ marginTop: 32, marginBottom: 16, paddingHorizontal: 2 }}>
           <View
             accessibilityRole="radiogroup"
             accessibilityLabelledBy="welcome-language-label"
-            style={{ marginTop: 10, flexDirection: 'row', gap: 10 }}>
+            style={{ marginTop: 10, flexDirection: 'row', gap: 12 }}>
             <LanguageOption
               locale="fa"
               label="فارسی"
@@ -217,8 +198,6 @@ export function WelcomeScreen() {
             />
           </View>
         </View>
-      </ScrollView>
-      <View style={{ paddingHorizontal: 16, paddingBottom: Math.max(insets.bottom, 16) + 8 }}>
         <OnboardingButton
           testID="welcome-continue"
           label={t('welcome.continue', { lng: selected })}
