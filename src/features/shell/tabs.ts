@@ -1,4 +1,5 @@
-export const TAB_IDS = ['home', 'clock', 'status', 'note', 'more'] as const;
+/** The five tabs in bar order, from the start edge; Home is the centre tab. */
+export const TAB_IDS = ['clock', 'status', 'home', 'note', 'more'] as const;
 export type TabId = (typeof TAB_IDS)[number];
 
 /** Paths of the five tab routes in `src/app/(main)/(tabs)`. */

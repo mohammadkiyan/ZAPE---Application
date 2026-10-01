@@ -7,11 +7,15 @@ Defines the navigation frame of RelTime Mobile: the five main tabs, how secondar
 ## ADDED Requirements
 
 ### Requirement: Five main tabs
-The app SHALL present a floating tab bar with exactly five tabs in this order: Home, Rel Clock, Status, Note, More. Persian labels SHALL be «خانه»، «زمان ما»، «حال»، «یادداشت»، «بیشتر». English labels SHALL be "Home", "Rel Clock", "Status", "Note", "More". Home SHALL be the initial tab for a signed-in user who has completed onboarding.
+The app SHALL present a floating tab bar with exactly five tabs in this order: Rel Clock, Status, Home, Note, More. Persian labels SHALL be «زمان ما»، «حال»، «خانه»، «یادداشت»، «بیشتر». English labels SHALL be "Rel Clock", "Status", "Home", "Note", "More". Home SHALL be the centre tab and SHALL be drawn slightly larger than the other four. Home SHALL be the initial tab for a signed-in user who has completed onboarding.
 
 #### Scenario: Signed-in user opens the app
 - **WHEN** a user who has completed onboarding launches the app
 - **THEN** the Home tab is shown and marked as the current tab
+
+#### Scenario: Home is the centre tab
+- **WHEN** the tab bar is shown
+- **THEN** Home is the third of the five tabs, and its bead, label and active indicator are slightly larger than those of the other tabs
 
 #### Scenario: Switching tabs
 - **WHEN** the user taps the Status tab
@@ -44,7 +48,7 @@ With the Persian locale the whole interface SHALL lay out right-to-left. With En
 
 #### Scenario: Persian layout
 - **WHEN** the locale is `fa`
-- **THEN** the tab order runs right-to-left starting with Home on the right, and Back chevrons point right
+- **THEN** the tab order runs right-to-left starting with Rel Clock on the right, and Back chevrons point right
 
 #### Scenario: Latin value inside Persian text
 - **WHEN** an email address is shown on a Persian screen

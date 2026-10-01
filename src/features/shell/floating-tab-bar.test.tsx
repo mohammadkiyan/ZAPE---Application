@@ -1,3 +1,4 @@
+import { StyleSheet } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import { TestProviders, setTestLocale } from '@/testing/test-providers';
 import { FloatingTabBar } from './floating-tab-bar';
@@ -19,9 +20,9 @@ describe('floating tab bar', () => {
     const result = renderBar();
     const tabs = result.getAllByRole('tab');
     expect(tabs.map((tab) => tab.props.accessibilityLabel)).toEqual([
-      'خانه',
       'زمان ما',
       'حال',
+      'خانه',
       'یادداشت',
       'بیشتر',
     ]);
@@ -31,6 +32,14 @@ describe('floating tab bar', () => {
       accessibilityRole: 'tablist',
       accessibilityLabel: 'بخش‌های RelTime',
     });
+  });
+
+  it('draws Home, the centre tab, a size up from the others', () => {
+    const result = renderBar({ active: 'status' });
+    const fontSize = (label: string) =>
+      StyleSheet.flatten(result.getByText(label).props.style).fontSize as number;
+    expect(fontSize('خانه')).toBeGreaterThan(fontSize('حال'));
+    expect(fontSize('خانه')).toBeGreaterThan(fontSize('زمان ما'));
   });
 
   it('shows English labels', async () => {
@@ -73,6 +82,20 @@ describe('floating tab bar', () => {
       </TestProviders>
     );
     expect(result.getByRole('tab', { name: 'Note, new note from your partner' })).toBeTruthy();
+  });
+
+  it('centres every label under its bead without the RTL top padding', async () => {
+    for (const locale of ['fa', 'en'] as const) {
+      await setTestLocale(locale);
+      const result = renderBar();
+      for (const label of locale === 'fa' ? ['خانه', 'یادداشت'] : ['Home', 'Rel Clock']) {
+        expect(StyleSheet.flatten(result.getByText(label).props.style)).toMatchObject({
+          textAlign: 'center',
+          paddingTop: 0,
+        });
+      }
+      result.unmount();
+    }
   });
 
   it('gives every tab a touch target of at least 44 points', () => {

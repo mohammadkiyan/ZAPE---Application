@@ -6,7 +6,7 @@ The RelTime Mobile design canvas ("RelTime Mobile", 55 artboards, ZAPE design sy
 
 ## What Changes
 
-- Add the product navigation shell. It has a floating five-tab bar (Home, Rel Clock, Status, Note, More; Persian labels خانه، زمان ما، حال، یادداشت، بیشتر) and stacked secondary screens, which open from tabs or cards with a Back affordance.
+- Add the product navigation shell. It has a floating five-tab bar (Rel Clock, Status, Home at the centre, Note, More; Persian labels زمان ما، حال، خانه، یادداشت، بیشتر) and stacked secondary screens, which open from tabs or cards with a Back affordance.
 - Add the clock-theme system. Ten named themes (Constellation, Porcelain, Chronograph, Mist, Rings, Astrolabe, Ruler, Editorial, Split-flap, Bracelet) each map to a tone (dark, light or gray), a default background pattern and a dial variant. The theme picked on the phone restyles every in-app surface. Onboarding stays on the white brand canvas.
 - Add the ten background patterns (Orbits, Plain, Grid, Dots, Sunburst, Ruled, Contour, Guilloché, Stars, Silk) and a Clock style picker with Theme / Background segments.
 - Adopt the ZAPE design tokens from the canvas: burgundy `#65001c`, white, cool gray `#e8eced` and black `#151515`, with Noto Sans Arabic for Persian and Inter for English.
