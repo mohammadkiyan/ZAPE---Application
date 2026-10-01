@@ -73,7 +73,6 @@ export function OnboardingBar({ step, onBack, onSkip }: OnboardingBarProps) {
         paddingHorizontal: 16,
         flexDirection: 'row',
         alignItems: 'center',
-        direction,
       }}>
       <View style={{ width: 88, alignItems: 'flex-start' }}>
         {onBack ? (
