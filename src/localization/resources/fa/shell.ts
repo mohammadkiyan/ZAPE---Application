@@ -27,6 +27,7 @@ export const shell = {
     partnerActions: 'کنش‌های همراه',
     signInCode: 'کد ورود آزمایشی: {{code}}',
   },
+  devSignOut: 'خروج از حساب (توسعه)',
   configError: {
     title: 'پیکربندی ناقص است',
     body: 'این نسخه به سرور متصل نیست. لطفاً نسخهٔ به‌روز برنامه را نصب کنید.',

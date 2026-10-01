@@ -11,9 +11,12 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import Animated, { FadeInDown, FadeOut } from 'react-native-reanimated';
+import { CircleAlert } from 'lucide-react-native';
 import { getApiClient } from '@/api/backend';
 import type { OtpRequestResponse } from '@/api/contracts/auth';
 import { requestOtp, verifyOtp } from '@/api/endpoints/auth';
+import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { CodeInput } from '@/features/auth/code-input';
 import { requestErrorKey, verifyErrorKey, type AccountErrorKey } from '@/features/auth/otp-errors';
@@ -22,11 +25,15 @@ import { sessionStore } from '@/features/auth/session-store';
 import { ME_QUERY_KEY } from '@/features/auth/use-me';
 import { MockDataFooter } from '@/features/development/mock-controls';
 import { formatCountdown } from '@/localization/format';
+import { directionForLocale } from '@/localization/locale';
 import { usePreferences } from '@/preferences/preferences';
 import { BURGUNDY } from '@/theme/clock-themes';
 import { localStepStore } from './local-step';
 import { OnboardingBar } from './onboarding-bar';
 import { OnboardingButton, OnboardingGlow, StepHeading } from './onboarding-parts';
+
+/** How long a wrong code stays on screen, shaking, before the boxes clear. */
+const WRONG_CODE_HOLD_MS = 420;
 
 interface SentCode {
   response: OtpRequestResponse;
@@ -75,31 +82,53 @@ function Pill({
         borderStyle: 'dashed',
         borderColor: 'rgba(21, 21, 21, 0.18)',
       }}>
+      {/* No lineHeight: a squeezed Noto Sans Arabic line box sits high in the pill on iOS. */}
       <Text
         className={dashed ? 'text-muted-foreground' : 'font-medium'}
-        style={{ fontSize: 14, lineHeight: 22, fontVariant: ['tabular-nums'] }}>
+        style={{
+          fontSize: 14,
+          textAlign: 'center',
+          includeFontPadding: false,
+          fontVariant: ['tabular-nums'],
+        }}>
         {label}
       </Text>
     </Pressable>
   );
 }
 
-function ErrorLine({ message }: { message?: string }) {
+/** A soft burgundy callout that eases in under the field; reduced motion skips the motion. */
+function ErrorNotice({ message, centred = false }: { message?: string; centred?: boolean }) {
   if (!message) return null;
   return (
-    <Text
+    <Animated.View
+      key={message}
+      entering={FadeInDown.duration(220)}
+      exiting={FadeOut.duration(150)}
       testID="account-error"
+      accessible
       accessibilityRole="alert"
       accessibilityLiveRegion="polite"
       style={{
-        marginTop: 10,
-        paddingHorizontal: 4,
-        fontSize: 13,
-        lineHeight: 22,
-        color: BURGUNDY,
+        marginTop: 14,
+        alignSelf: centred ? 'center' : 'stretch',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: 'rgba(101, 0, 28, 0.14)',
+        backgroundColor: 'rgba(101, 0, 28, 0.05)',
       }}>
-      {message}
-    </Text>
+      <Icon as={CircleAlert} size={16} color={BURGUNDY} />
+      <Text
+        className={centred ? 'w-auto' : 'w-auto flex-1'}
+        style={{ flexShrink: 1, fontSize: 13, color: BURGUNDY }}>
+        {message}
+      </Text>
+    </Animated.View>
   );
 }
 
@@ -119,6 +148,9 @@ export function AccountScreen() {
   const [code, setCode] = useState('');
   const [error, setError] = useState<AccountErrorKey>();
   const [notice, setNotice] = useState<string>();
+  const [wrongCode, setWrongCode] = useState(0);
+  const clearTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(clearTimer.current), []);
 
   const now = useSecondTicker(stage === 'code');
   const remaining = sent
@@ -173,9 +205,18 @@ export function AccountScreen() {
         },
         onError: (failure) => {
           const { key, clearCode } = verifyErrorKey(failure);
-          if (clearCode) setCode('');
           setError(key ?? undefined);
-          codeRef.current?.focus();
+          if (clearCode) {
+            // The wrong digits shake in place for a moment, then clear for a fresh try.
+            setWrongCode((count) => count + 1);
+            clearTimeout(clearTimer.current);
+            clearTimer.current = setTimeout(() => {
+              setCode('');
+              codeRef.current?.focus();
+            }, WRONG_CODE_HOLD_MS);
+          } else {
+            codeRef.current?.focus();
+          }
         },
       }
     );
@@ -188,6 +229,7 @@ export function AccountScreen() {
   }
 
   function onChangeNumber() {
+    clearTimeout(clearTimer.current);
     setStage('phone');
     setCode('');
     setError(undefined);
@@ -206,23 +248,15 @@ export function AccountScreen() {
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ paddingTop: 24, paddingBottom: 24 }}>
         <StepHeading
-          eyebrow={t('onboarding:account.eyebrow')}
           title={t('onboarding:account.title')}
-          body={t('onboarding:account.body')}
+          body={stage === 'phone' ? t('onboarding:account.body') : undefined}
         />
-        <View style={{ marginTop: 40, paddingHorizontal: 16 }}>
+        <View style={{ marginTop: 32, paddingHorizontal: 16 }}>
           {stage === 'phone' ? (
             <>
-              <Text
-                nativeID="account-phone-label"
-                className="font-medium text-muted-foreground"
-                style={{ paddingHorizontal: 4, fontSize: 13, lineHeight: 20 }}>
-                {t('onboarding:account.phoneLabel')}
-              </Text>
               <TextInput
                 testID="phone-input"
                 accessibilityLabel={t('onboarding:account.phoneLabel')}
-                accessibilityLabelledBy="account-phone-label"
                 value={phone}
                 onChangeText={(value) => {
                   setPhone(value);
@@ -236,9 +270,7 @@ export function AccountScreen() {
                 keyboardType="phone-pad"
                 textContentType="telephoneNumber"
                 autoComplete="tel"
-                returnKeyType="send"
                 style={{
-                  marginTop: 8,
                   height: 54,
                   paddingHorizontal: 18,
                   borderRadius: 14,
@@ -255,37 +287,30 @@ export function AccountScreen() {
                   writingDirection: 'ltr',
                 }}
               />
-              <ErrorLine message={error ? t(error) : undefined} />
-              <Text
-                className="text-muted-foreground"
-                style={{ marginTop: 10, paddingHorizontal: 4, fontSize: 13, lineHeight: 22 }}>
-                {t('onboarding:account.phoneHint')}
-              </Text>
+              <ErrorNotice message={error ? t(error) : undefined} />
               <View style={{ marginTop: 16 }}>
                 <MockDataFooter />
               </View>
             </>
           ) : (
             <>
-              <Text
-                className="font-medium text-muted-foreground"
-                style={{ paddingHorizontal: 4, fontSize: 13, lineHeight: 20 }}>
-                {t('onboarding:account.codeLabel')}
-              </Text>
-              <View style={{ marginTop: 10 }}>
+              <View>
                 <CodeInput
                   ref={codeRef}
                   value={code}
                   onChange={(next) => {
+                    clearTimeout(clearTimer.current);
                     setCode(next);
                     setError(undefined);
                   }}
                   accessibilityLabel={t('onboarding:account.codeLabel')}
                   locale={locale}
                   editable={!verify.isPending}
+                  invalid={Boolean(error)}
+                  shakeKey={wrongCode}
                 />
               </View>
-              <ErrorLine message={error ? t(error) : undefined} />
+              <ErrorNotice centred message={error ? t(error) : undefined} />
               <Text
                 testID="code-destination"
                 className="text-center text-muted-foreground"
@@ -311,7 +336,9 @@ export function AccountScreen() {
                   marginTop: 10,
                   flexDirection: 'row',
                   justifyContent: 'center',
+                  alignItems: 'center',
                   gap: 8,
+                  direction: directionForLocale(locale),
                 }}>
                 <Pill
                   testID="change-number"

@@ -22,7 +22,6 @@ export function resolveEntry({
   localStep,
   steps = ONBOARDING_STEPS,
 }: EntryInput): Entry {
-  return 'loading'
   if (session === 'unknown') return 'loading';
   if (session === 'signed-out') return localStep === 'account' ? 'sign-in' : 'welcome';
   // Offline launch: trust the last onboarding state seen on this phone.

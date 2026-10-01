@@ -27,7 +27,7 @@ describe('display-name prompt', () => {
         mutations: { retry: false, gcTime: Infinity },
       },
     });
-    localStepStore.setState({ step: 'name', hydrated: true });
+    localStepStore.setState({ step: 'name', isHydrated: true });
   });
   afterEach(() => jest.restoreAllMocks());
 

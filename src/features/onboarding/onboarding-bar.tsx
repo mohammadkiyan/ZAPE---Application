@@ -1,11 +1,12 @@
 import { Fragment } from 'react';
-import { I18nManager, Pressable, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { localizeDigits } from '@/localization/format';
+import { directionForLocale } from '@/localization/locale';
 import { usePreferences } from '@/preferences/preferences';
 import { BURGUNDY } from '@/theme/clock-themes';
 
@@ -57,6 +58,9 @@ function ProgressNode({ state }: { state: NodeState }) {
 export function OnboardingBar({ step, onBack, onSkip }: OnboardingBarProps) {
   const { t } = useTranslation(['onboarding', 'common']);
   const locale = usePreferences((state) => state.locale);
+  // From the locale, not I18nManager: the thread must start where the language reads from
+  // even when the native layout direction hasn't caught up with the locale yet.
+  const direction = directionForLocale(locale);
   const label =
     step >= 5
       ? t('onboarding:progress.complete')
@@ -69,6 +73,7 @@ export function OnboardingBar({ step, onBack, onSkip }: OnboardingBarProps) {
         paddingHorizontal: 16,
         flexDirection: 'row',
         alignItems: 'center',
+        direction,
       }}>
       <View style={{ width: 88, alignItems: 'flex-start' }}>
         {onBack ? (
@@ -89,7 +94,7 @@ export function OnboardingBar({ step, onBack, onSkip }: OnboardingBarProps) {
               justifyContent: 'center',
               boxShadow: '0 6px 16px rgba(21, 21, 21, 0.08)',
             }}>
-            <Icon as={I18nManager.isRTL ? ChevronRight : ChevronLeft} size={20} color={INK} />
+            <Icon as={direction === 'rtl' ? ChevronRight : ChevronLeft} size={20} color={INK} />
           </Pressable>
         ) : null}
       </View>
@@ -145,8 +150,8 @@ export function OnboardingBar({ step, onBack, onSkip }: OnboardingBarProps) {
             testID="onboarding-brand"
             accessibilityElementsHidden
             importantForAccessibility="no"
-            className="font-latin font-semibold"
-            style={{ fontSize: 15, lineHeight: 20, letterSpacing: 0.3, writingDirection: 'ltr' }}>
+            className="text-right font-latin font-semibold"
+            style={{ fontSize: 15, lineHeight: 20, letterSpacing: 0.3 }}>
             ZAPE
           </Text>
         )}

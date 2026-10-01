@@ -19,6 +19,6 @@ export async function signInToMock(
   const { session } = await verifyOtp(api, { flowId, code: MOCK_OTP_CODE });
   setAuthorizationProvider(() => `Bearer ${session.accessToken}`);
   sessionStore.setState({ status: 'signed-in', credential: session });
-  localStepStore.setState({ step: localStep, hydrated: true });
+  localStepStore.setState({ step: localStep, isHydrated: true });
   return session;
 }

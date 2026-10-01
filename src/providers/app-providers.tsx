@@ -109,7 +109,8 @@ export function AppHydrationGate({
         }
         await AsyncStorage.setItem(DIRECTION_RELOAD_ATTEMPT_KEY, direction);
         if (!active) return;
-        I18nManager.allowRTL(true);
+        // Allowing RTL lets an RTL device language keep the layout RTL, so LTR must disallow it.
+        I18nManager.allowRTL(direction === 'rtl');
         I18nManager.forceRTL(direction === 'rtl');
         await reloadAppAsync();
       } catch {

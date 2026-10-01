@@ -15,12 +15,10 @@ export const onboarding = {
     continue: 'ادامه',
   },
   account: {
-    eyebrow: 'حساب',
     title: 'وارد حساب Relationship OS شوید.',
     body: 'اگر حساب ندارید، با همین شماره ساخته می‌شود.',
     phoneLabel: 'شماره‌ی تلفن همراه',
     phonePlaceholder: '0912 345 6789',
-    phoneHint: 'کدی یک‌بارمصرف برایتان پیامک می‌کنیم؛ رمزی لازم نیست.',
     requestCode: 'دریافت کد ورود',
     codeLabel: 'کد ورود',
     codeSentPrefix: 'کد ۶ رقمی به ',

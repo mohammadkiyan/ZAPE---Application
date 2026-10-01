@@ -1,4 +1,9 @@
 import { cn } from '@/lib/utils';
+import {
+  detectWritingDirection,
+  directionForLocale,
+  type WritingDirection,
+} from '@/localization/locale';
 import { usePreferences } from '@/preferences/preferences';
 import { fontFamilyForClass } from '@/theme/fonts';
 import { Slot } from '@rn-primitives/slot';
@@ -66,6 +71,26 @@ const ARIA_LEVEL: Partial<Record<TextVariant, string>> = {
 
 const TextClassContext = React.createContext<string | undefined>(undefined);
 
+// Nested Text renders as a span of its parent's paragraph, so only the outermost Text
+// owns the paragraph's width and direction.
+const InsideTextContext = React.createContext(false);
+
+function textContent(node: React.ReactNode): string {
+  if (typeof node === 'string' || typeof node === 'number') return String(node);
+  if (Array.isArray(node)) return node.map(textContent).join('');
+  if (React.isValidElement<{ children?: React.ReactNode }>(node)) {
+    return textContent(node.props.children);
+  }
+  return '';
+}
+
+// The paragraph follows its script's direction so `textAlign: 'auto'` lands on the side
+// the text reads from. iOS reads `writingDirection`; Android ignores it and takes the
+// paragraph direction from the Yoga `direction` instead.
+function directionStyleFor(direction: WritingDirection) {
+  return { direction, writingDirection: direction } as const;
+}
+
 function Text({
   className,
   asChild = false,
@@ -78,22 +103,32 @@ function Text({
     asChild?: boolean;
   }) {
   const textClass = React.useContext(TextClassContext);
+  const nested = React.useContext(InsideTextContext);
   const locale = usePreferences((state) => state.locale);
   const Component = asChild ? Slot : RNText;
-  const classes = cn(textVariants({ variant }), textClass, className);
+  const directionStyle = nested
+    ? undefined
+    : directionStyleFor(
+        detectWritingDirection(textContent(props.children)) ?? directionForLocale(locale)
+      );
+  const classes = cn(!nested && 'w-full', textVariants({ variant }), {
+    'pt-2': directionStyle?.direction === 'rtl',
+  }, textClass, className);
   // Bundled fonts register one family per weight, so the family carries the weight.
   const fontStyle = {
     fontFamily: fontFamilyForClass(classes, locale),
     fontWeight: 'normal' as const,
   };
   return (
-    <Component
-      className={classes}
-      style={[fontStyle, style]}
-      role={variant ? ROLE[variant] : undefined}
-      aria-level={variant ? ARIA_LEVEL[variant] : undefined}
-      {...props}
-    />
+    <InsideTextContext.Provider value={true}>
+      <Component
+        className={classes}
+        style={[fontStyle, directionStyle, style]}
+        role={variant ? ROLE[variant] : undefined}
+        aria-level={variant ? ARIA_LEVEL[variant] : undefined}
+        {...props}
+      />
+    </InsideTextContext.Provider>
   );
 }
 

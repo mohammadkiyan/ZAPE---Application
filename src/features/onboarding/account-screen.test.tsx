@@ -56,18 +56,22 @@ describe('Account step', () => {
     requestOtp = jest.spyOn(endpoints, 'requestOtp').mockResolvedValue(sent);
     verifyOtp = jest.spyOn(endpoints, 'verifyOtp');
     sessionStore.setState({ status: 'signed-out', credential: undefined });
-    localStepStore.setState({ step: 'account', hydrated: true });
+    localStepStore.setState({ step: 'account', isHydrated: true });
   });
   afterEach(() => {
     jest.restoreAllMocks();
     jest.useRealTimers();
   });
 
+  it('says a new number creates an account', () => {
+    render(<AccountScreen />, { wrapper: Wrapper });
+    expect(screen.getByText('اگر حساب ندارید، با همین شماره ساخته می‌شود.')).toBeTruthy();
+  });
+
   it('normalizes a number typed in Persian digits and names the destination', async () => {
     await toCodeStage('۰۹۱۲ ۳۴۵ ۶۷۸۹');
     expect(requestOtp).toHaveBeenCalledWith(expect.anything(), { phoneNumber: '+989123456789' });
     expect(screen.getByTestId('code-destination')).toHaveTextContent(/\+989123456789/);
-    expect(screen.getByText('اگر حساب ندارید، با همین شماره ساخته می‌شود.')).toBeTruthy();
   });
 
   it('does not send an invalid number and explains under the field', () => {
@@ -123,7 +127,11 @@ describe('Account step', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'این کد درست نیست. دوباره امتحان کنید.'
     );
-    expect(screen.getByTestId('code-input').props.value).toBe('');
+    // The wrong digits are held in the error state while the boxes shake, then cleared.
+    expect(boxes()[0]).toHaveTextContent('۱');
+    expect(boxes()[0]).toHaveStyle({ borderColor: 'rgba(101, 0, 28, 0.55)' });
+    await waitFor(() => expect(screen.getByTestId('code-input').props.value).toBe(''));
+    expect(screen.getByRole('alert')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'ورود' })).toBeDisabled();
 
     fireEvent.press(screen.getByRole('button', { name: 'تغییر شماره' }));

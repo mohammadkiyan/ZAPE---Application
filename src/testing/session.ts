@@ -24,7 +24,7 @@ export function seedSession(
   queryClient: QueryClient,
   { me, localStep = null }: { me?: Me | null; localStep?: LocalStep | null } = {}
 ): void {
-  localStepStore.setState({ step: localStep, hydrated: true });
+  localStepStore.setState({ step: localStep, isHydrated: true });
   if (me === null || me === undefined) {
     sessionStore.setState({ status: 'signed-out', credential: undefined });
     return;

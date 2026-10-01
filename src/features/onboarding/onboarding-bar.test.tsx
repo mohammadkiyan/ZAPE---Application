@@ -36,6 +36,14 @@ describe('onboarding bar', () => {
     expect(screen.getAllByTestId('progress-line-on')).toHaveLength(1);
   });
 
+  it('runs the thread from the side the language reads from', async () => {
+    renderBar({ step: 1, onBack: jest.fn() });
+    expect(screen.getByTestId('onboarding-bar')).toHaveStyle({ direction: 'rtl' });
+    await setTestLocale('en');
+    renderBar({ step: 1, onBack: jest.fn() });
+    expect(screen.getByTestId('onboarding-bar')).toHaveStyle({ direction: 'ltr' });
+  });
+
   it('offers «بعداً» on a skippable step', () => {
     const onSkip = jest.fn();
     renderBar({ step: 3, onBack: jest.fn(), onSkip });

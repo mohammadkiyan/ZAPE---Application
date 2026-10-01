@@ -39,6 +39,7 @@ export function createSessionStore(storage: SecureValueStore = secureValueStore)
           return;
         }
         if (raw) await current.unsetCredential();
+        else set({ status: 'signed-out' });
       } catch (error) {
         console.error(error);
         // A failed read must not keep the splash up; the user signs in again.

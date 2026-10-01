@@ -30,6 +30,7 @@ export const shell: Strings<typeof fa> = {
     partnerActions: 'Partner actions',
     signInCode: 'Mock sign-in code: {{code}}',
   },
+  devSignOut: 'Sign out (development)',
   configError: {
     title: 'Configuration incomplete',
     body: 'This build is not connected to a server. Please install an updated version of the app.',

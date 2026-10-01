@@ -9,8 +9,8 @@ import { setTestLocale } from '@/testing/test-providers';
 import { ONBOARDING_STEP_KEY, localStepStore } from './local-step';
 import { WelcomeScreen } from './welcome-screen';
 
-const mockPush = jest.fn();
-jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush }) }));
+const mockNavigate = jest.fn();
+jest.mock('expo-router', () => ({ useRouter: () => ({ navigate: mockNavigate }) }));
 jest.mock('expo-font', () => ({ useFonts: jest.fn(() => [true, null]) }));
 jest.mock('expo-splash-screen', () => ({
   preventAutoHideAsync: jest.fn(async () => undefined),
@@ -37,7 +37,7 @@ describe('Welcome', () => {
   beforeEach(async () => {
     await AsyncStorage.clear();
     jest.clearAllMocks();
-    localStepStore.setState({ step: null, hydrated: true });
+    localStepStore.setState({ step: null, isHydrated: true });
     preferencesStore.setState({ hydrated: true, locale: 'fa', clockTheme: 'constellation' });
     Object.defineProperty(I18nManager, 'isRTL', { value: true, configurable: true });
     await setTestLocale('fa');
@@ -51,7 +51,7 @@ describe('Welcome', () => {
     expect(screen.getByTestId('time-dial', { includeHiddenElements: true })).toBeTruthy();
 
     fireEvent.press(screen.getByRole('button', { name: 'ادامه' }));
-    await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/sign-in'));
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/sign-in'));
     expect(reloadAppAsync).not.toHaveBeenCalled();
     expect(preferencesStore.getState().locale).toBe('fa');
     expect(await AsyncStorage.getItem(ONBOARDING_STEP_KEY)).toBe('account');
@@ -73,7 +73,7 @@ describe('Welcome', () => {
 
     await waitFor(() => expect(reloadAppAsync).toHaveBeenCalled());
     expect(preferencesStore.getState().locale).toBe('en');
-    expect(mockPush).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
 
     const writes = jest.mocked(AsyncStorage.setItem).mock.invocationCallOrder;
     const calls = jest.mocked(AsyncStorage.setItem).mock.calls.map(([key]) => key);
@@ -81,5 +81,21 @@ describe('Welcome', () => {
     expect(stepWrite).toBeLessThan(writes[calls.indexOf('zape.locale')]!);
     expect(stepWrite).toBeLessThan(jest.mocked(reloadAppAsync).mock.invocationCallOrder[0]!);
     expect(await AsyncStorage.getItem(ONBOARDING_STEP_KEY)).toBe('account');
+  });
+
+  it('continues without waiting for a reload when the saved direction could not be applied', async () => {
+    // English is saved, but the last left-to-right reload left the layout right-to-left.
+    preferencesStore.setState({ locale: 'en' });
+    await AsyncStorage.setItem('zape.direction-reload-attempt', 'ltr');
+    await setTestLocale('en');
+    jest.clearAllMocks();
+    renderWelcome();
+
+    const button = await screen.findByRole('button', { name: 'Continue in English' });
+    fireEvent.press(button);
+
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/sign-in'));
+    expect(reloadAppAsync).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: 'Continue in English' })).not.toBeBusy();
   });
 });

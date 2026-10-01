@@ -14,7 +14,10 @@ export async function signOutLocally(queryClient: QueryClient): Promise<void> {
   // Not cancelQueries(): a reverted fetch would hand its caller the previous account's data.
   queryClient.clear();
   rememberRelationship(null);
-  await Promise.allSettled([sessionStore.getState().clear(), localStepStore.getState().clear()]);
+  await Promise.allSettled([
+    sessionStore.getState().unsetCredential(),
+    localStepStore.getState().unsetStep(),
+  ]);
 }
 
 /** Revokes the session on the backend (best effort), then signs out locally. */

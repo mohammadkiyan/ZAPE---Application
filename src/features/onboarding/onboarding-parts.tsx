@@ -66,13 +66,12 @@ export function OnboardingButton({
       accessibilityRole="button"
       accessibilityState={{ disabled: inactive, busy }}
       disabled={inactive}
-      onPress={onPress}
-      >
+      onPress={onPress}>
       {busy ? (
         <ActivityIndicator color="#ffffff" />
       ) : (
         <Text
-          className={latin ? 'font-latin font-medium' : 'font-medium pt-2'}
+          className={latin ? 'font-latin font-medium' : 'font-medium'}
           style={{ color: '#ffffff', fontSize: 16 }}>
           {label}
         </Text>
@@ -81,25 +80,29 @@ export function OnboardingButton({
   );
 }
 
-/** Eyebrow, headline and supporting line at the top of a step. */
+/** Optional eyebrow, headline and optional supporting line at the top of a step. */
 export function StepHeading({
   eyebrow,
   title,
   body,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   body?: ReactNode;
 }) {
   return (
     <View style={{ paddingHorizontal: 20 }}>
-      <Text className="font-medium text-muted-foreground" style={{ fontSize: 13, lineHeight: 20 }}>
-        {eyebrow}
-      </Text>
+      {eyebrow ? (
+        <Text
+          className="font-medium text-muted-foreground"
+          style={{ marginBottom: 6, fontSize: 13, lineHeight: 20 }}>
+          {eyebrow}
+        </Text>
+      ) : null}
       <Text
         accessibilityRole="header"
         className="font-semibold"
-        style={{ marginTop: 6, fontSize: 26, lineHeight: 42 }}>
+        style={{ fontSize: 26, lineHeight: 42 }}>
         {title}
       </Text>
       {body ? (

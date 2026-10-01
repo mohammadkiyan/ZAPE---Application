@@ -17,12 +17,10 @@ export const onboarding: Strings<typeof fa> = {
     continue: 'Continue in English',
   },
   account: {
-    eyebrow: 'Account',
     title: 'Sign in to Relationship OS.',
     body: "If you don't have an account, we'll create one with this number.",
     phoneLabel: 'Mobile number',
     phonePlaceholder: '0912 345 6789',
-    phoneHint: "We'll text you a one-time code. No password needed.",
     requestCode: 'Get sign-in code',
     codeLabel: 'Sign-in code',
     codeSentPrefix: 'We texted a 6-digit code to ',

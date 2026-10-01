@@ -113,6 +113,8 @@ function LanguageOption({
       variant={'outline'}
       size={'default'}
       testID={`language-${locale}`}
+      // Button sets role="button", which outranks accessibilityRole.
+      role="radio"
       accessibilityRole="radio"
       accessibilityState={{ checked: selected }}
       accessibilityLanguage={locale}
@@ -120,7 +122,7 @@ function LanguageOption({
       className='flex-1'
      >
       <Text
-        className={locale === 'en' ? 'font-latin font-semibold' : 'font-semibold pt-2'}
+        className={locale === 'en' ? 'font-latin font-semibold' : 'font-semibold'}
         style={{ fontSize: 16 }}>
         {label}
       </Text>
@@ -152,20 +154,27 @@ export function WelcomeScreen() {
 
   async function onContinue() {
     setBusy(true);
-    // Written first: if the direction changes the app reloads and resumes at the Account step.
-    await localStepStore.getState().setStep('account');
-    const reloads = I18nManager.isRTL !== (directionForLocale(selected) === 'rtl');
-    await preferencesStore.getState().setLocale(selected);
-    if (reloads) return;
-    setBusy(false);
-    router.navigate('/sign-in');
+    try {
+      // Written first: if the direction changes the app reloads and resumes at the Account step.
+      await localStepStore.getState().setStep('account');
+      // The gate reloads only for a new locale with the other direction. Re-confirming the current
+      // one (e.g. after a reload that could not flip the direction) has nothing to wait for.
+      const reloads =
+        selected !== preferencesStore.getState().locale &&
+        I18nManager.isRTL !== (directionForLocale(selected) === 'rtl');
+      await preferencesStore.getState().setLocale(selected);
+      if (!reloads) router.navigate('/sign-in');
+    } finally {
+      // A reload unmounts this screen; anything else must leave Continue pressable again.
+      setBusy(false);
+    }
   }
 
   return (
     <View testID="welcome" className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
       <OnboardingGlow />
       <ScrollView contentContainerStyle={{ paddingTop: 16, paddingBottom: 24 }}>
-        <Wordmark />
+          <Wordmark />
         <View>
           <Illustration locale={locale} />
         </View>

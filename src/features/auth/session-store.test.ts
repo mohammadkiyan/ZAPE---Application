@@ -57,11 +57,11 @@ describe('session store', () => {
     expect(locked.getState().status).toBe('signed-out');
   });
 
-  it('deletes the stored credential on clear', async () => {
+  it('deletes the stored credential on unsetCredential', async () => {
     const { store, values } = fakeSecureStore({ [SESSION_KEY]: JSON.stringify(credential) });
     const session = createSessionStore(store);
     await session.getState().hydrate();
-    await session.getState().clear();
+    await session.getState().unsetCredential();
     expect(values.has(SESSION_KEY)).toBe(false);
     expect(session.getState()).toMatchObject({ status: 'signed-out', credential: undefined });
   });

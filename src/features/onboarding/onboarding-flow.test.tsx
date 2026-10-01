@@ -72,7 +72,7 @@ async function launch(initialUrl = '/') {
     },
   });
   sessionStore.setState({ status: 'unknown', credential: undefined });
-  localStepStore.setState({ step: null, hydrated: false });
+  localStepStore.setState({ step: null, isHydrated: false });
   await act(async () => {
     await Promise.all([sessionStore.getState().hydrate(), localStepStore.getState().hydrate()]);
   });
