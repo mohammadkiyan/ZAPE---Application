@@ -44,4 +44,5 @@ The daily heart of RelTime is two small gestures: telling your partner how you f
   - `PUT /me/note {text}`
   - `POST /relationships/current/notes/{noteId}/read`
 - **Mock**: partner controls "Partner sets a status" and "Partner leaves a note".
+- **ZAPE backend**: `add-mobile-app-status-and-notes` owns storage, membership checks, server timestamps, note versions, read receipts and retry identity behind `/api/app/v1`. The phone mock mirrors that contract.
 - **Depends on**: `add-app-foundation`, `add-onboarding-and-auth` and `add-relationship`.

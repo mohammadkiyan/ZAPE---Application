@@ -2,7 +2,7 @@
 
 ## 1. Contracts and mock
 
-- [ ] 1.1 Add `contracts/status.ts` and `contracts/notes.ts` with endpoints (board queries, `PUT /me/status`, `PUT /me/note`, read). Add contract tests, including a 121-grapheme note rejected by the schema.
+- [ ] 1.1 Add `contracts/status.ts` and `contracts/notes.ts` with endpoints (board queries, `PUT /me/status`, `PUT /me/note`, read). Preserve one `Idempotency-Key` per logical save across retries. Add contract tests for ZAPE response fixtures, a 121-grapheme note and stale `note_version_changed` reads.
 - [ ] 1.2 Add mock handlers (today's events in the relationship zone, a new note id per save, `seenAt` reset) and the partner controls "Partner sets a status", "Partner leaves a note" and "Partner reads my note". Verify with mock tests.
 - [ ] 1.3 Capture the server clock offset from response `Date` headers in the API client and use it in `formatRelative`. Verify with a unit test.
 
@@ -15,7 +15,7 @@
 
 ## 3. Notes
 
-- [ ] 3.1 Add `countGraphemes` with tests for emoji, ZWJ sequences and Persian text.
+- [ ] 3.1 Add `countGraphemes` with a grapheme-aware fallback and tests for emoji, ZWJ sequences and Persian text.
 - [ ] 3.2 Build the Note tab cards (partner, yours, empty states, NEW badge, edited or updated times, seen receipt) and the action label. Add render tests for each state.
 - [ ] 3.3 Build the compose sheet (prefill, counter, helper, cancel, disabled save, error kept in the sheet) and the optimistic `useSaveNote` with the saved toast. Add RNTL tests for save, over-limit and a server error.
 - [ ] 3.4 Implement `useMarkReadWhenVisible` and the unread selector, and wire the tab bar dot through the `(main)` layout. Add tests showing Home-only visibility keeps the note unread and 1.5 s on the Note tab marks it read.
@@ -31,3 +31,4 @@
 
 - [ ] 5.1 On a dev build, use the mock partner to set a status and leave a note. Confirm Home and the tab dot update within 30 s, reading clears them and your seen receipt appears after "Partner reads my note". Toggle airplane mode during a status save and confirm "Waiting to sync" and then the retry.
 - [ ] 5.2 Run `pnpm run check` and both bundle exports, and confirm they pass.
+- [ ] 5.3 Against ZAPE's local `/api/app/v1` gateway and `add-mobile-app-status-and-notes`, verify two accounts share the same boards, a repeated save creates one version, an old queued read cannot clear a new note, and all payloads parse the app schemas.

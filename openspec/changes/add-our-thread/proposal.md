@@ -2,7 +2,7 @@
 
 ## Why
 
-The canvas adds a gentle, cooperative game on top of the daily check-ins, called «رشته‌ی ما» / "Our thread". Each day both partners share a status or a note, a bead lands on the thread. Streaks, charms and two unlockable clock themes reward doing it *together*, with "no points, no competition". It gives the couple a reason to come back daily and gives the clock-theme system its locked Split-flap and Bracelet themes.
+The canvas adds a gentle, cooperative game on top of the daily check-ins, called «رشته‌ی ما» / "Our thread". Each day both partners share a status or a note, a bead lands on the thread. Streaks, charms and two unlockable clock themes reward doing it _together_, with "no points, no competition". It gives the couple a reason to come back daily and gives the clock-theme system its locked Split-flap and Bracelet themes.
 
 ## What Changes
 
@@ -44,5 +44,6 @@ The canvas adds a gentle, cooperative game on top of the daily check-ins, called
   - `POST /relationships/current/thread/nudge`
   - `POST /relationships/current/thread/celebrations/{id}/seen`
 - **Server-authoritative**: streaks, charms and unlocks are computed by the backend. The mock mirrors the rules.
+- **ZAPE backend**: `add-mobile-app-our-thread` computes the daily bead ritual on the existing relationship card. It is separate from ZAPE's spendable Red String Club “Threads”, XP/Glow, public badges and annual occasion-knot streak.
 - **Mock**: partner controls "Partner checks in today", "Advance the mock day" and "Grant 100th note".
 - **Depends on**: `add-app-foundation`, `add-onboarding-and-auth`, `add-relationship`, `add-status-and-notes` and `add-occasions-and-shared-dates` (occasion-based charms).

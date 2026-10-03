@@ -45,5 +45,5 @@
 
 ## 7. Integration
 
-- [ ] 7.1 Run `pnpm run check`, `pnpm run bundle:android` and `pnpm run bundle:ios`, and confirm all pass.
+- [x] 7.1 Run `pnpm run check`, `pnpm run bundle:android` and `pnpm run bundle:ios`, and confirm all pass.
 - [ ] 7.2 On a development build, switch between Constellation, Porcelain and Mist, toggle fa/en (direction reload) and toggle airplane mode. Confirm the tones, mirroring and offline chip behave as specified.

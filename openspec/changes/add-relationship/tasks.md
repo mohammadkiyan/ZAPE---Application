@@ -35,4 +35,4 @@
 ## 6. Integration
 
 - [ ] 6.1 On a dev build, create a relationship, share the invite, use the mock partner join, and confirm Home and Rel Clock tick. Background the app for 1 minute and confirm the clock catches up. End the relationship and confirm routing.
-- [ ] 6.2 Run `pnpm run check` and both bundle exports, and confirm they pass.
+- [x] 6.2 Run `pnpm run check` and both bundle exports, and confirm they pass.

@@ -1,3 +1,4 @@
+import { serverNow } from '@/api/server-clock';
 import type { AppLocale } from './locale';
 
 export type DateParts = [year: number, month: number, day: number];
@@ -245,4 +246,17 @@ export function formatRelative(
   if (fa) return `${toPersianDigits(hours)} ساعت پیش`;
   if (compact) return `${hours}h ago`;
   return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+}
+
+/**
+ * Relative time since a server timestamp, e.g. a status or a note: «۱۰ دقیقه پیش» / "10m ago".
+ * Measured against the server's clock (the offset the API client captures from response `Date`
+ * headers), so a phone whose own clock is off still reads the right age.
+ */
+export function formatRelativeTime(
+  at: string | number | Date,
+  locale: AppLocale,
+  { compact = false, now = serverNow() }: { compact?: boolean; now?: number } = {}
+): string {
+  return formatRelative((now - new Date(at).getTime()) / 60_000, locale, { compact });
 }

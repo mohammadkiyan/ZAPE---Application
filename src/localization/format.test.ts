@@ -1,9 +1,11 @@
+import { recordServerDate, resetServerClock } from '@/api/server-clock';
 import {
   formatClock,
   formatCountdown,
   formatDate,
   formatNumber,
   formatRelative,
+  formatRelativeTime,
   gregorianToJalali,
   gregorianToJalaliArithmetic,
   jalaliToGregorian,
@@ -74,5 +76,44 @@ describe('locale formatting', () => {
     expect(formatCountdown(60, 'en')).toBe('1:00');
     expect(formatCountdown(41.2, 'en')).toBe('0:42');
     expect(formatCountdown(-3, 'en')).toBe('0:00');
+  });
+});
+
+describe('relative time against the server clock', () => {
+  const PHONE_NOW = Date.parse('2026-10-03T12:00:00.000Z');
+  beforeEach(() => {
+    resetServerClock();
+    jest.spyOn(Date, 'now').mockReturnValue(PHONE_NOW);
+  });
+  afterEach(() => {
+    jest.restoreAllMocks();
+    resetServerClock();
+  });
+
+  it('formats the age of a server timestamp', () => {
+    expect(formatRelativeTime('2026-10-03T11:50:00.000Z', 'fa')).toBe('۱۰ دقیقه پیش');
+    expect(formatRelativeTime('2026-10-03T11:50:00.000Z', 'en', { compact: true })).toBe('10m ago');
+    expect(formatRelativeTime('2026-10-03T09:59:00.000Z', 'en')).toBe('2 hours ago');
+    expect(formatRelativeTime('2026-10-03T11:59:40.000Z', 'en')).toBe('Just now');
+  });
+
+  it('uses the server offset, so a slow phone clock does not read "Just now" forever', () => {
+    // The status was set at 12:05 server time; this phone still thinks it is 12:00.
+    const at = '2026-10-03T12:05:00.000Z';
+    expect(formatRelativeTime(at, 'en')).toBe('Just now');
+    // A response arrives: the server's clock reads 12:15.
+    recordServerDate('Sat, 03 Oct 2026 12:15:00 GMT', PHONE_NOW, PHONE_NOW);
+    expect(formatRelativeTime(at, 'en')).toBe('10 minutes ago');
+    expect(formatRelativeTime(at, 'fa')).toBe('۱۰ دقیقه پیش');
+  });
+
+  it('uses the server offset when the phone clock runs fast', () => {
+    // The phone is an hour ahead: without the offset a new status would read "1 hour ago".
+    recordServerDate('Sat, 03 Oct 2026 11:00:00 GMT', PHONE_NOW, PHONE_NOW);
+    expect(formatRelativeTime('2026-10-03T10:58:00.000Z', 'en')).toBe('2 minutes ago');
+  });
+
+  it('never goes negative for a timestamp slightly in the future', () => {
+    expect(formatRelativeTime('2026-10-03T12:00:30.000Z', 'fa')).toBe('همین حالا');
   });
 });

@@ -1,4 +1,5 @@
 import type { z } from 'zod';
+import { recordServerDate } from './server-clock';
 
 export type ApiErrorCode =
   | 'http_error'
@@ -114,6 +115,7 @@ export function createApiClient(config: ApiClientOptions): ApiClient {
         if (authorization) headers.Authorization = authorization;
         if (requestId) headers['X-Request-Id'] = requestId;
         if (options.body !== undefined) headers['Content-Type'] = 'application/json';
+        const requestedAt = Date.now();
         const response = await Promise.race([
           fetcher(requestUrl.toString(), {
             method: options.method ?? 'GET',
@@ -123,6 +125,8 @@ export function createApiClient(config: ApiClientOptions): ApiClient {
           }),
           interrupted,
         ]);
+        // Every answer, error or not, says what time the server thinks it is.
+        recordServerDate(response.headers?.get?.('Date'), requestedAt, Date.now());
         const raw = await Promise.race([response.text(), interrupted]);
         let data: unknown;
         try {

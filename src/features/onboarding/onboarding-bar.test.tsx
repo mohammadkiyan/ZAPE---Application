@@ -1,3 +1,4 @@
+import { StyleSheet } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { TestProviders, setTestLocale } from '@/testing/test-providers';
 import { OnboardingBar } from './onboarding-bar';
@@ -36,12 +37,14 @@ describe('onboarding bar', () => {
     expect(screen.getAllByTestId('progress-line-on')).toHaveLength(1);
   });
 
-  it('runs the thread from the side the language reads from', async () => {
-    renderBar({ step: 1, onBack: jest.fn() });
-    expect(screen.getByTestId('onboarding-bar')).toHaveStyle({ direction: 'rtl' });
-    await setTestLocale('en');
-    renderBar({ step: 1, onBack: jest.fn() });
-    expect(screen.getByTestId('onboarding-bar')).toHaveStyle({ direction: 'ltr' });
+  it('pins no layout direction, so the thread mirrors with the app', async () => {
+    for (const locale of ['fa', 'en'] as const) {
+      await setTestLocale(locale);
+      const { unmount } = renderBar({ step: 1, onBack: jest.fn() });
+      const style = StyleSheet.flatten(screen.getByTestId('onboarding-bar').props.style);
+      expect(style.direction).toBeUndefined();
+      unmount();
+    }
   });
 
   it('offers «بعداً» on a skippable step', () => {

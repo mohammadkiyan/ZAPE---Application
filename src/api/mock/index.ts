@@ -1,6 +1,8 @@
 import './handlers/health';
 import './handlers/auth';
 import './handlers/relationship';
+import './handlers/status';
+import './handlers/notes';
 import { createMockFetcher } from './router';
 import { mockStore } from './state';
 import { clearSession } from '../session';

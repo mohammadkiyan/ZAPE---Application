@@ -19,11 +19,11 @@ RelTime Mobile is the companion to the RelTime desk clock. The canvas makes the 
 - Add "Apply to" on Rel Clock: «RelTime من» / «فقط این گوشی», with «اعمال سبک».
 - Add notifications:
   - onboarding step 4 with the OS permission prompt
-  - a Notifications settings screen with a master switch and categories: partner status and note; thread reminder at 21:00, nudges and unlocks; occasion week and day at 09:00; shared-date requests always on; RelTime offline for more than 30 minutes, off by default
+  - a Notifications settings screen with a master switch and categories: partner status and note; thread reminder at 21:00, nudges and unlocks; occasion week and day at 09:00; shared-date requests always visible in-app; RelTime offline for more than 30 minutes, off by default
   - personal quiet hours (default 23:00–08:00) that defer delivery
   - push registration and deep links from each notification
 - Add the More tab: pair summary, thread stats, pending banner, grouped rows, version footer and in-place language switch.
-- Add the Account screen: name, email, sign-in method, language, data export, signed-in devices, sign out, and delete account with confirmation.
+- Add the Account screen: name, optional email and sign-in phone, sign-in method, language, data export, signed-in devices, sign out, and a deletion request with confirmation.
 - Add the Home RelTime row: «RelTime شما · اتاق نشیمن · همگام», offline state, or «اتصال RelTime · بدون دستگاه هم کار می‌کند».
 
 ## Capabilities
@@ -45,6 +45,7 @@ RelTime Mobile is the companion to the RelTime desk clock. The canvas makes the 
 - **Code**: `src/features/devices`, `src/features/notifications` and `src/features/settings`; routes `(onboarding)/{device,notifications}.tsx`, `(main)/devices/{index,add,[deviceId],connected}.tsx`, `(main)/notifications.tsx` and `(main)/account.tsx`; the More tab.
 - **Dependencies**: `expo-notifications`, `expo-sharing` and `expo-file-system`, via `pnpm exec expo install`, plus the `expo-notifications` config plugin in `app.json`. Push needs a development-client rebuild.
 - **API contract (new)**: devices (list, pairing code, pairing status, get/patch, firmware update, restart, unpair, apply style), notification preferences, push token registration, account (patch name, export, sessions list/revoke, delete).
+- **ZAPE backend**: `add-mobile-app-devices-and-settings` owns pairing, hardware authorization and commands, Expo push delivery through ZAPE's notification service, session inventory, export and the asynchronous deletion request. The phone only presents and sends the typed gateway commands.
 - **Mock**: partner and device controls "RelTime enters the pairing code", "Device goes offline", "Firmware update progresses" and "Send test notification" (local).
 - **Docs**: README section on push setup (credentials stay out of the repo). AGENTS.md gets a gotcha that push requires a rebuilt dev client.
 - **Depends on**: all previous changes.

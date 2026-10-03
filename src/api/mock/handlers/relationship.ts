@@ -42,7 +42,7 @@ interface MockMember {
   joinedAt: string;
 }
 
-interface MockRelationship {
+export interface MockRelationship {
   id: string;
   status: RelationshipStatus;
   start: RelationshipStart;
@@ -137,7 +137,7 @@ function isOpen(relationship: MockRelationship | undefined): relationship is Moc
   return relationship?.status === 'pending_partner' || relationship?.status === 'active';
 }
 
-function openRelationshipOf(
+export function openRelationshipOf(
   slice: MockRelationshipSlice,
   accountId: string
 ): MockRelationship | undefined {
@@ -241,14 +241,14 @@ function endRelationship(state: MockState, relationship: MockRelationship, by: s
   syncMembers(state, relationship, by);
 }
 
-/** The wall-clock date today in `timeZone`, as `YYYY-MM-DD`. */
-function todayIn(timeZone: string): string {
+/** The wall-clock date in `timeZone` at `at` (now by default), as `YYYY-MM-DD`. */
+export function todayIn(timeZone: string, at: Date = new Date()): string {
   return new Intl.DateTimeFormat('en-CA', {
     timeZone,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
-  }).format(new Date());
+  }).format(at);
 }
 
 registerMockRoute('POST /relationships', (request, state) => {

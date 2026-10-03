@@ -111,9 +111,15 @@ function Text({
     : directionStyleFor(
         detectWritingDirection(textContent(props.children)) ?? directionForLocale(locale)
       );
-  const classes = cn(!nested && 'w-full', textVariants({ variant }), {
-    'pt-2': directionStyle?.direction === 'rtl',
-  }, textClass, className);
+  const classes = cn(
+    !nested && 'w-full',
+    textVariants({ variant }),
+    {
+      'pt-2': directionStyle?.direction === 'rtl',
+    },
+    textClass,
+    className
+  );
   // Bundled fonts register one family per weight, so the family carries the weight.
   const fontStyle = {
     fontFamily: fontFamilyForClass(classes, locale),

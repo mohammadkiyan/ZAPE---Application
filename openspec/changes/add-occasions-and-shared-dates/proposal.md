@@ -16,6 +16,7 @@ The canvas turns the couple's important days into moments. The week before an oc
   - «روز ولنتاین» Valentine's Day: fixed Feb 14
 
   Each has its own mark and pattern, an owner (shared / yours / partner's), yearly recurrence and a years count.
+
 - Add the Occasions screen, reached from Home's "Next up" card and More:
   - the next occasion, highlighted
   - all occasions, with date, owner, years and days to go
@@ -56,4 +57,5 @@ The canvas turns the couple's important days into moments. The week before an oc
   - `POST …/{id}/approve`
   - `POST …/{id}/decline`
 - **Mock**: partner controls "Partner proposes a wedding date change" and "Partner answers my proposal (approve/decline)".
+- **ZAPE backend**: `add-mobile-app-occasions-and-shared-dates` owns the fixed occasion projection, recurrence, current dates and approval transactions on the existing Relationship Passport card. The app formats and renders the server's effective state.
 - **Depends on**: `add-app-foundation`, `add-onboarding-and-auth`, `add-relationship` and `add-status-and-notes` (note CTA on the celebration day).

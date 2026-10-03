@@ -1,0 +1,42 @@
+export const status = {
+  title: 'حال',
+  subtitle: 'حال هر دوی شما در این لحظه چطور است؟',
+  you: 'شما',
+  partner: 'همراه',
+  moods: {
+    happy: 'شاد',
+    calm: 'آرام',
+    loved: 'عاشق',
+    missing: 'دلتنگ',
+    focused: 'متمرکز',
+    tired: 'خسته',
+    sad: 'غمگین',
+    upset: 'دلخور',
+    stressed: 'نگران',
+    unwell: 'ناخوش',
+  },
+  notSet: 'ثبت نشده',
+  partnerNotSet: 'هنوز حالی ثبت نشده',
+  change: 'تغییر حال',
+  set: 'ثبت حال',
+  updated: 'حال شما به‌روز شد',
+  inSync: 'هم‌حال شدید',
+  today: 'امروز',
+  history: 'تاریخچه‌ی حال امروز',
+  historyEmpty: 'امروز هنوز حالی ثبت نشده.',
+  /** A history entry read aloud: «شاد، ۱۶:۱۵، شما». */
+  entry: '{{mood}}، {{time}}، {{owner}}',
+  offline: 'برای تغییر حال، دوباره به اینترنت متصل شوید.',
+  picker: {
+    title: 'حالتان چطور است؟',
+    current: '{{mood}}، حال فعلی',
+    hint: 'حال شما بلافاصله برای هر دو نفر به‌روز می‌شود.',
+  },
+  home: {
+    set: 'ثبت حال',
+    none: 'بدون حال',
+    /** «شما · ۱۰ دقیقه پیش». */
+    meta: '{{who}} · {{when}}',
+    open: 'باز کردن حال',
+  },
+};

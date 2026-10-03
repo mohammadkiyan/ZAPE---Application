@@ -2,12 +2,12 @@
 
 ## 1. Contracts and mock
 
-- [ ] 1.1 Add `contracts/occasions.ts` and `contracts/date-proposals.ts` with endpoints (occasions board, birthday, reminder prefs, create/get/approve/decline proposal). Add contract tests, including `proposal_exists` and `not_allowed_to_decide`.
+- [ ] 1.1 Add `contracts/occasions.ts` and `contracts/date-proposals.ts` with endpoints (server-derived occasion board, birthday, reminder prefs, create/get/approve/decline proposal). Add contract tests for ZAPE fixtures, including `proposal_exists`, `not_allowed_to_decide` and expired proposals.
 - [ ] 1.2 Add mock handlers seeded with the canvas dates and an open partner wedding proposal (28 → 31 Ordibehesht), plus the partner controls "Partner proposes a wedding date change" and "Partner answers my proposal", and a dev-only "Override today" control used by the engine's clock source. Verify with mock tests that approving applies the value and declining keeps it.
 
 ## 2. Occasion engine
 
-- [ ] 2.1 Implement `engine.ts` (next occurrence in the relationship calendar, Esfand 30 and Feb 29 fallbacks, years, `nextUp` with rank ties, week/day phase from prefs). Add table tests with the canvas dates, the fallbacks and ties.
+- [ ] 2.1 Implement `engine.ts` for unsaved editor previews and mock parity (relationship-calendar recurrence, leap fallbacks, rank ties and phase). Add table tests with canvas dates and compare its results with ZAPE's occasion fixtures; use server board values for live Home and Rel Clock.
 - [ ] 2.2 Port the `OccasionMark` glyphs and the six occasion patterns into `Backdrop`, and verify with a render smoke test per mark and pattern.
 
 ## 3. Occasions screens
@@ -17,7 +17,7 @@
 
 ## 4. Shared-date approval
 
-- [ ] 4.1 Build `(main)/shared-dates/[proposalId].tsx` with the pending, approved and declined states (current vs proposed with weekday, effect sentence, actions only for the non-proposer, history). Add render tests for all three states and the proposer view.
+- [ ] 4.1 Build `(main)/shared-dates/[proposalId].tsx` with pending, approved, declined and expired states (current vs proposed with weekday, effect sentence, actions only for the non-proposer while pending, history). Add render tests for all four states and the proposer view.
 - [ ] 4.2 Add pending banners on More, Relationship and the occasion editor, and the «N در انتظار» tag on the More row, all linking to review. Add tests that banners clear after a decision.
 - [ ] 4.3 Make the Relationship "Time together" rows editable through proposals, reusing the relationship pickers. Add a test that the clock keeps the old start until approval.
 
@@ -32,3 +32,4 @@
 
 - [ ] 6.1 On a dev build, approve and decline the seeded wedding proposal and confirm banners, tags and the date update. Propose a first-date change and answer it with the partner control. Set the mock "today" to 5 days before a birthday and to the anniversary, and confirm the Home phases.
 - [ ] 6.2 Run `pnpm run check` and both bundle exports, and confirm they pass.
+- [ ] 6.3 Against ZAPE's local `add-mobile-app-occasions-and-shared-dates` gateway, verify both accounts and the web relationship view share the same approved date and Home phase, with the old value retained until approval.

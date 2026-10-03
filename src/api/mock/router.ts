@@ -59,8 +59,16 @@ export function registerMockRoute(route: `${Method} /${string}`, handler: MockHa
 
 function jsonResponse(status: number, body: unknown): Response {
   const text = body === undefined ? '' : JSON.stringify(body);
-  // The API client only reads `ok`, `status` and `text()`, so a minimal response keeps the mock portable.
-  return { ok: status >= 200 && status < 300, status, text: async () => text } as Response;
+  // Like the gateway, every answer carries the server's time; the mock's server is this phone.
+  const date = new Date().toUTCString();
+  // The API client only reads `ok`, `status`, `text()` and the `Date` header, so a minimal
+  // response keeps the mock portable.
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    text: async () => text,
+    headers: { get: (name: string) => (name.toLowerCase() === 'date' ? date : null) },
+  } as Response;
 }
 
 function delay(ms: number, signal: AbortSignal | null | undefined): Promise<void> {

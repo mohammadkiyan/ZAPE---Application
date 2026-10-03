@@ -27,4 +27,4 @@
 ## 5. Integration
 
 - [ ] 5.1 On a dev build with the mock backend, go through a fresh sign-up, the English switch reload, code `000000`, the name step, then Ready (with the Relationship step stubbed as complete). Confirm that relaunching mid-flow resumes correctly and "Expire my session" returns to Welcome.
-- [ ] 5.2 Run `pnpm run check` and both bundle exports, and confirm they pass.
+- [x] 5.2 Run `pnpm run check` and both bundle exports, and confirm they pass.

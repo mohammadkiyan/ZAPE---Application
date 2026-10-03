@@ -119,8 +119,7 @@ function LanguageOption({
       accessibilityState={{ checked: selected }}
       accessibilityLanguage={locale}
       onPress={onSelect}
-      className='flex-1'
-     >
+      className="flex-1">
       <Text
         className={locale === 'en' ? 'font-latin font-semibold' : 'font-semibold'}
         style={{ fontSize: 16 }}>
@@ -174,7 +173,7 @@ export function WelcomeScreen() {
     <View testID="welcome" className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
       <OnboardingGlow />
       <ScrollView contentContainerStyle={{ paddingTop: 16, paddingBottom: 24 }}>
-          <Wordmark />
+        <Wordmark />
         <View>
           <Illustration locale={locale} />
         </View>
@@ -188,7 +187,7 @@ export function WelcomeScreen() {
         </View>
       </ScrollView>
       <View style={{ paddingHorizontal: 16, paddingBottom: Math.max(insets.bottom, 16) + 8 }}>
-      <View style={{ marginTop: 32, marginBottom: 16, paddingHorizontal: 2 }}>
+        <View style={{ marginTop: 32, marginBottom: 16, paddingHorizontal: 2 }}>
           <View
             accessibilityRole="radiogroup"
             accessibilityLabelledBy="welcome-language-label"

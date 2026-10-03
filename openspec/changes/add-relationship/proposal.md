@@ -2,7 +2,7 @@
 
 ## Why
 
-RelTime is built around one shared thing: the time two people have been together. In the canvas, every phone and every RelTime device attaches to a *relationship*, not to each other. The relationship clock (years, months, days down to milliseconds since the start date) is the hero of Home and the whole Rel Clock tab. Status, notes, occasions, the thread and devices all need a relationship to exist first.
+RelTime is built around one shared thing: the time two people have been together. In the canvas, every phone and every RelTime device attaches to a _relationship_, not to each other. The relationship clock (years, months, days down to milliseconds since the start date) is the hero of Home and the whole Rel Clock tab. Status, notes, occasions, the thread and devices all need a relationship to exist first.
 
 ## What Changes
 

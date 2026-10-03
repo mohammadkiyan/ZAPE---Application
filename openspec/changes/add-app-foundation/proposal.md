@@ -10,7 +10,7 @@ The RelTime Mobile design canvas ("RelTime Mobile", 55 artboards, ZAPE design sy
 - Add the clock-theme system. Ten named themes (Constellation, Porcelain, Chronograph, Mist, Rings, Astrolabe, Ruler, Editorial, Split-flap, Bracelet) each map to a tone (dark, light or gray), a default background pattern and a dial variant. The theme picked on the phone restyles every in-app surface. Onboarding stays on the white brand canvas.
 - Add the ten background patterns (Orbits, Plain, Grid, Dots, Sunburst, Ruled, Contour, Guilloché, Stars, Silk) and a Clock style picker with Theme / Background segments.
 - Adopt the ZAPE design tokens from the canvas: burgundy `#65001c`, white, cool gray `#e8eced` and black `#151515`, with Noto Sans Arabic for Persian and Inter for English.
-- Add a typed domain API layer over the existing `src/api/client.ts`. It carries zod-validated contracts, an in-app mock backend for development (no Relationship OS API exists yet), connectivity awareness and freshness rules for partner data.
+- Add a typed domain API layer over the existing `src/api/client.ts`. It carries zod-validated contracts for ZAPE's `/api/app/v1` gateway, an in-app mock backend for development, connectivity awareness and freshness rules for partner data.
 - Add shared locale formatting: Persian digits, Jalali dates, relative times ("۲ ساعت پیش" / "2h ago").
 - **BREAKING**: Remove the light/dark/system theme preference and the maroon/mist/void palette. The clock theme replaces them. The Vazirmatn and Cormorant Garamond fonts are dropped.
 - **BREAKING**: Remove the root readiness route and the `(auth)` / `(app)` placeholder routes.

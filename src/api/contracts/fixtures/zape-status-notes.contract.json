@@ -1,0 +1,159 @@
+{
+  "contract": "zape-app-status-notes",
+  "version": 1,
+  "about": "Shared by ZAPE (apps/web gateway tests, commerce specs) and ZAPE---Application (src/api/contracts tests). Keep both copies byte-identical.",
+  "responses": {
+    "statusBoard": {
+      "you": {
+        "mood": "happy",
+        "at": "2026-10-03T12:45:00.000Z"
+      },
+      "partner": {
+        "mood": "calm",
+        "at": "2026-10-03T12:23:00.000Z"
+      },
+      "today": [
+        {
+          "owner": "you",
+          "mood": "happy",
+          "at": "2026-10-03T12:45:00.000Z"
+        },
+        {
+          "owner": "partner",
+          "mood": "calm",
+          "at": "2026-10-03T12:23:00.000Z"
+        },
+        {
+          "owner": "you",
+          "mood": "missing",
+          "at": "2026-10-03T10:50:00.000Z"
+        }
+      ]
+    },
+    "statusBoardAfterMidnight": {
+      "you": {
+        "mood": "happy",
+        "at": "2026-10-03T12:45:00.000Z"
+      },
+      "partner": null,
+      "today": []
+    },
+    "status": {
+      "mood": "tired",
+      "at": "2026-10-03T13:05:12.345Z"
+    },
+    "noteBoard": {
+      "you": {
+        "id": "nv_Zk3mQ9tLx2Vb7Hn1Rw8YcA",
+        "text": "امروز در جلسه‌ات موفق باشی ❤️",
+        "updatedAt": "2026-10-03T06:12:00.000Z",
+        "edited": false,
+        "seenAt": "2026-10-03T06:35:00.000Z"
+      },
+      "partner": {
+        "id": "nv_p4Jd0sXe6TqUa2Wm9Bv5Lg",
+        "text": "به تو فکر می‌کنم.",
+        "updatedAt": "2026-10-03T12:43:00.000Z",
+        "edited": true,
+        "seenAt": null
+      }
+    },
+    "noteBoardEmpty": {
+      "you": null,
+      "partner": null
+    },
+    "note": {
+      "id": "nv_8QyTn3CfR1uVh6Kz0MbE7w",
+      "text": "Good luck with your meeting today ❤️",
+      "updatedAt": "2026-10-03T13:06:40.120Z",
+      "edited": true,
+      "seenAt": null
+    },
+    "noteRead": {
+      "id": "nv_p4Jd0sXe6TqUa2Wm9Bv5Lg",
+      "seenAt": "2026-10-03T13:07:02.000Z"
+    }
+  },
+  "errors": {
+    "no_relationship": 404,
+    "invalid_mood": 400,
+    "note_empty": 400,
+    "note_too_long": 400,
+    "note_not_found": 404,
+    "note_version_changed": 409,
+    "idempotency_key_required": 400,
+    "idempotency_key_reused": 422
+  },
+  "graphemes": [
+    {
+      "label": "Persian letters",
+      "text": "سلام",
+      "count": 4
+    },
+    {
+      "label": "Persian with a zero-width non-joiner",
+      "text": "به تو فکر می‌کنم.",
+      "count": 16
+    },
+    {
+      "label": "Persian with vowel marks",
+      "text": "مَحَبَّت",
+      "count": 4
+    },
+    {
+      "label": "Latin with a combining accent",
+      "text": "café",
+      "count": 4
+    },
+    {
+      "label": "heart with a variation selector",
+      "text": "❤️",
+      "count": 1
+    },
+    {
+      "label": "family joined by zero-width joiners",
+      "text": "👨‍👩‍👧‍👦",
+      "count": 1
+    },
+    {
+      "label": "kiss with skin tones",
+      "text": "🧑🏻‍❤️‍💋‍🧑🏽",
+      "count": 1
+    },
+    {
+      "label": "skin tone modifier",
+      "text": "👍🏽",
+      "count": 1
+    },
+    {
+      "label": "one flag",
+      "text": "🇮🇷",
+      "count": 1
+    },
+    {
+      "label": "two flags",
+      "text": "🇮🇷🇩🇪",
+      "count": 2
+    },
+    {
+      "label": "subdivision flag",
+      "text": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+      "count": 1
+    },
+    {
+      "label": "keycap",
+      "text": "1️⃣",
+      "count": 1
+    },
+    {
+      "label": "line break as one cluster",
+      "text": "a\r\nb",
+      "count": 3
+    },
+    {
+      "label": "mixed note",
+      "text": "Good luck ❤️ 👨‍👩‍👧‍👦",
+      "count": 13
+    }
+  ]
+}

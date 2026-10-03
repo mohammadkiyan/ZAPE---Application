@@ -4,7 +4,7 @@
 
 - [ ] 1.1 Add `contracts/thread.ts` and endpoints (thread, nudge, celebration seen). Add contract tests for every check-in state and both theme lock shapes.
 - [ ] 1.2 Implement the mock thread rules (check-ins from status and note writes, turnover in the relationship zone, streak and best, one nudge per day, the 12 charm rules, theme unlocks, per-member celebrations). Add the partner controls "Partner checks in today", "Advance the mock day" and "Grant 100th note". Add mock tests for streak break, best retention and the notes100 → flap unlock.
-- [ ] 1.3 Add `milestones.ts` (the next and previous 1,000-day / 10,000-hour milestone, progress). Add tests that pin the canvas example (2,000 days → 50,000 hours, 97%).
+- [ ] 1.3 Add `milestones.ts` for display progress between server refetches, without changing the server-selected next/previous milestone. Add tests against ZAPE's canvas fixture (2,000 days → 50,000 hours, 97%).
 
 ## 2. Our thread screen
 
@@ -26,3 +26,4 @@
 
 - [ ] 4.1 On a dev build, check in as you and as the mock partner and confirm «کامل شد» on all surfaces. Advance the day without a partner check-in and confirm the streak resets while best stays. Grant the 100th note and confirm the Split-flap celebration, then the unlocked picker thumbnail.
 - [ ] 4.2 Run `pnpm run check` and both bundle exports, and confirm they pass.
+- [ ] 4.3 Against ZAPE's local `add-mobile-app-our-thread` gateway, verify two accounts agree on beads, a missed-day reset and theme unlocks while Red String Club XP and spendable Threads remain unchanged.

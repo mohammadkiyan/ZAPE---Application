@@ -7,19 +7,23 @@ The canvas sources are the `Together` screen (props `streak`, `checkin`, `unlock
 ## Goals / Non-Goals
 
 **Goals:**
+
 - Server-authoritative game state, so two phones can never disagree about a bead, a streak or an unlock.
 - A single thread query powering all six surfaces.
 
 **Non-Goals:**
+
 - Streak repair or freezes, and extra charms beyond the twelve.
 - Push delivery of the 21:00 reminder, nudges and unlock notifications. Those are defined in `add-devices-settings-notifications`. This change only exposes the state.
 
 ## Decisions
 
 ### Authority
-Beads, streaks, charms, milestones and unlocks are computed by the backend from check-in events (status and note writes) at write time and at the day turnover. The client never derives them from local history. Alternative: compute on the client from the status and note history. Rejected because history is not fully downloaded, and the two phones could disagree after offline edits.
+
+Beads, streaks, charms, milestones and unlocks are computed by ZAPE (`add-mobile-app-our-thread`) from accepted status and note events at write time and at the day turnover. This daily ritual is private and separate from ZAPE's spendable club Threads and annual occasion-knot streak. The client never derives awards from local history. Alternative: compute on the client from status and note history. Rejected because history is not fully downloaded, and the two phones could disagree after offline edits.
 
 ### Contract
+
 ```
 Thread {
   streak, best, today: { you: CheckIn|null, partner: CheckIn|null, state:'both'|'you'|'partner'|'none' },
@@ -32,18 +36,23 @@ Thread {
 }
 CheckIn { kind:'status'|'note', mood?, at }
 ```
+
 The thread query is partner-mutable (30 s), and is also invalidated after the user's own status and note mutations succeed, so "Complete" appears instantly.
 
 ### Milestone computation
-The milestone is computed on the server, but the client also recomputes `progress` and `daysLeft` locally from the relationship clock between refetches. That keeps the percent from lagging a ticking clock. A shared `milestones.ts` with tests pins the canvas numbers.
+
+The milestone is computed on the server. The client may animate its displayed `progress` between refetches from the approved relationship start, but the next/previous milestone identity, awards and unlocks never change from a local calculation. A small `milestones.ts` helper and ZAPE contract fixtures pin the canvas numbers.
 
 ### Locked themes in the picker
+
 `clock-themes` gets an `isLocked(themeId)` input fed from `thread.themes`. The shell and theme modules don't import the thread feature. The `(main)` layout passes a `lockedThemes` map into the Clock style panel. If a stored phone theme is somehow locked (for example on a new relationship), the app falls back to Constellation.
 
 ### Celebrations
+
 On foreground, if `celebrations` is non-empty, the first unseen one is presented as a sheet over the current tab. Dismissing it posts `seen`. Only one is shown per foreground to avoid stacking.
 
 ### Mock rules
+
 The mock implements the same rules against a mock "today" (shared with the occasion engine's dev override). "Advance the mock day" moves the turnover, so streak breaks and celebrations can be exercised.
 
 ## Risks / Trade-offs
