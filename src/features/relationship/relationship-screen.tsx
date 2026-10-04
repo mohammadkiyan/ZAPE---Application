@@ -344,11 +344,12 @@ export function RelationshipMoreRow() {
     <Button
       testID="more-relationship"
       accessibilityRole="button"
+      variant="ghost"
       onPress={() => router.push({ pathname: '/relationship', params: { origin: 'more' } })}
       className="mx-4 min-h-14 flex-row items-center justify-between rounded-2xl px-4"
       style={{ borderWidth: 1, borderColor: palette.glassEdge, backgroundColor: palette.glass }}>
-      <View className="flex-row items-center justify-between">
-        <Text className="font-medium">{t('more.row')}</Text>
+      <View className="flex-1 flex-row items-center justify-between">
+        <Text className="text-base font-medium">{t('more.row')}</Text>
         {relationship ? (
           <Text className="text-sm text-muted-foreground">
             {localizeDigits(

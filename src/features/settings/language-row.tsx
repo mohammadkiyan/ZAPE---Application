@@ -1,4 +1,4 @@
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Text } from '@/components/ui/text';
 import type { AppLocale } from '@/localization/locale';
@@ -20,9 +20,9 @@ export function LanguageRow() {
   return (
     <View
       testID="more-language"
-      className="mx-4 min-h-14 items-center justify-between rounded-2xl px-4"
+      className="mx-4 min-h-14 flex-row items-center justify-between gap-3 rounded-2xl px-4"
       style={{ borderWidth: 1, borderColor: palette.glassEdge, backgroundColor: palette.glass }}>
-      <Text nativeID="more-language-label" className="font-medium">
+      <Text nativeID="more-language-label" className="w-auto flex-1 font-medium">
         {t('language')}
       </Text>
       <View
@@ -55,7 +55,7 @@ export function LanguageRow() {
                 backgroundColor: selected ? palette.segSel : 'transparent',
               }}>
               <Text
-                className={locale === 'en' ? 'font-latin font-medium' : 'font-medium'}
+                className={locale === 'en' ? 'font-latin font-medium' : 'font-medium p-0'}
                 style={{ fontSize: 13, color: selected ? palette.fg : palette.muted }}>
                 {name}
               </Text>
