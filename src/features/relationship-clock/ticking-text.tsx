@@ -14,8 +14,10 @@ function pad(value: number, length: number): string {
   return text;
 }
 
-/** `hh:mm:ss.mmm` (or just `mmm`) for a time of day in ms, with Persian digits for `fa`. */
-export function formatDayMs(dayMs: number, format: 'full' | 'ms', persian: boolean): string {
+export type TickingFormat = 'full' | 'ms' | 'fraction';
+
+/** `hh:mm:ss.mmm`, `mmm` or `.mmm` for a time of day in ms, with Persian digits for `fa`. */
+export function formatDayMs(dayMs: number, format: TickingFormat, persian: boolean): string {
   'worklet';
   const whole = Math.floor(dayMs);
   const ms = whole % 1000;
@@ -23,7 +25,11 @@ export function formatDayMs(dayMs: number, format: 'full' | 'ms', persian: boole
   const mi = Math.floor(whole / 60_000) % 60;
   const h = Math.floor(whole / 3_600_000);
   const text =
-    format === 'ms' ? pad(ms, 3) : `${pad(h, 2)}:${pad(mi, 2)}:${pad(s, 2)}.${pad(ms, 3)}`;
+    format === 'ms'
+      ? pad(ms, 3)
+      : format === 'fraction'
+        ? `.${pad(ms, 3)}`
+        : `${pad(h, 2)}:${pad(mi, 2)}:${pad(s, 2)}.${pad(ms, 3)}`;
   if (!persian) return text;
   let out = '';
   for (let i = 0; i < text.length; i++) {
@@ -35,7 +41,7 @@ export function formatDayMs(dayMs: number, format: 'full' | 'ms', persian: boole
 
 export interface TickingTextProps {
   dayMs: SharedValue<number>;
-  format?: 'full' | 'ms';
+  format?: TickingFormat;
   locale: AppLocale;
   weight?: FontWeight;
   style?: StyleProp<TextStyle>;

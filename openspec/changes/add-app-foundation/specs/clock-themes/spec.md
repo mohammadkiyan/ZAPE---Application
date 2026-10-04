@@ -8,20 +8,20 @@ Defines the clock-theme system: the catalog of themes and background patterns, h
 
 ### Requirement: Theme catalog
 
-The app SHALL offer these ten clock themes. Each one has a fixed tone, a default background and a dial variant:
+The app SHALL offer these ten clock themes. Each one has a fixed tone, a default background, a dial variant and a face. The face is how the Rel Clock draws the time: `dials` is the six-dial face, and the other six themes have a face of their own (see `relationship-clock`):
 
-| id            | fa / en name              | tone  | default background | dial     |
-| ------------- | ------------------------- | ----- | ------------------ | -------- |
-| constellation | صورت فلکی / Constellation | dark  | orbits             | classic  |
-| porcelain     | چینی / Porcelain          | light | plain              | classic  |
-| chronograph   | کرنوگراف / Chronograph    | dark  | sunburst           | chrono   |
-| mist          | مه / Mist                 | gray  | contour            | hairline |
-| rings         | حلقه‌ها / Rings           | dark  | guilloche          | classic  |
-| astrolabe     | اسطرلاب / Astrolabe       | dark  | stars              | classic  |
-| ruler         | خط‌کش / Ruler             | light | graticule          | hairline |
-| editorial     | نوشتار / Editorial        | light | ruled              | hairline |
-| flap          | ورقی / Split-flap         | gray  | dots               | classic  |
-| bracelet      | دستبند / Bracelet         | light | silk               | hairline |
+| id            | fa / en name              | tone  | default background | dial     | face      |
+| ------------- | ------------------------- | ----- | ------------------ | -------- | --------- |
+| constellation | صورت فلکی / Constellation | dark  | orbits             | classic  | dials     |
+| porcelain     | چینی / Porcelain          | light | plain              | classic  | dials     |
+| chronograph   | کرنوگراف / Chronograph    | dark  | sunburst           | chrono   | dials     |
+| mist          | مه / Mist                 | gray  | contour            | hairline | dials     |
+| rings         | حلقه‌ها / Rings           | dark  | guilloche          | classic  | rings     |
+| astrolabe     | اسطرلاب / Astrolabe       | dark  | stars              | classic  | astrolabe |
+| ruler         | خط‌کش / Ruler             | light | graticule          | hairline | ruler     |
+| editorial     | نوشتار / Editorial        | light | ruled              | hairline | editorial |
+| flap          | ورقی / Split-flap         | gray  | dots               | classic  | flap      |
+| bracelet      | دستبند / Bracelet         | light | silk               | hairline | bracelet  |
 
 The default theme for a new install SHALL be Constellation.
 

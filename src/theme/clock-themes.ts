@@ -32,6 +32,8 @@ export type BackgroundChoice = BackgroundId | 'auto';
 export const TONE_IDS = ['dark', 'light', 'gray'] as const;
 export type Tone = (typeof TONE_IDS)[number];
 export type DialVariant = 'classic' | 'chrono' | 'hairline';
+/** How the Rel Clock draws the time: six dials on the thread, or the theme's own face. */
+export type FaceId = 'dials' | 'rings' | 'astrolabe' | 'ruler' | 'editorial' | 'flap' | 'bracelet';
 
 export const DEFAULT_THEME: ThemeId = 'constellation';
 export const BURGUNDY = '#65001c';
@@ -42,64 +44,82 @@ export interface ClockTheme {
   tone: Tone;
   background: BackgroundId;
   dial: DialVariant;
+  face: FaceId;
   name: LocalizedName;
 }
 
-// Copied from the RelTime Mobile canvas (Home/Clock `THEMES` and the `TL` name table).
+// Tone, background, dial and names are copied from the RelTime Mobile canvas (Home/Clock
+// `THEMES` and the `TL` name table); faces follow the RelTime device canvas, where six themes
+// have a face of their own.
 export const THEMES: Record<ThemeId, ClockTheme> = {
   constellation: {
     tone: 'dark',
     background: 'orbits',
     dial: 'classic',
+    face: 'dials',
     name: { fa: 'صورت فلکی', en: 'Constellation' },
   },
   porcelain: {
     tone: 'light',
     background: 'plain',
     dial: 'classic',
+    face: 'dials',
     name: { fa: 'چینی', en: 'Porcelain' },
   },
   chronograph: {
     tone: 'dark',
     background: 'sunburst',
     dial: 'chrono',
+    face: 'dials',
     name: { fa: 'کرنوگراف', en: 'Chronograph' },
   },
-  mist: { tone: 'gray', background: 'contour', dial: 'hairline', name: { fa: 'مه', en: 'Mist' } },
+  mist: {
+    tone: 'gray',
+    background: 'contour',
+    dial: 'hairline',
+    face: 'dials',
+    name: { fa: 'مه', en: 'Mist' },
+  },
   rings: {
     tone: 'dark',
     background: 'guilloche',
     dial: 'classic',
+    face: 'rings',
     name: { fa: 'حلقه‌ها', en: 'Rings' },
   },
   astrolabe: {
     tone: 'dark',
     background: 'stars',
     dial: 'classic',
+    face: 'astrolabe',
     name: { fa: 'اسطرلاب', en: 'Astrolabe' },
   },
   ruler: {
     tone: 'light',
     background: 'graticule',
     dial: 'hairline',
+    face: 'ruler',
     name: { fa: 'خط‌کش', en: 'Ruler' },
   },
   editorial: {
     tone: 'light',
     background: 'ruled',
     dial: 'hairline',
+    face: 'editorial',
     name: { fa: 'نوشتار', en: 'Editorial' },
   },
   flap: {
     tone: 'gray',
     background: 'dots',
     dial: 'classic',
+    face: 'flap',
     name: { fa: 'ورقی', en: 'Split-flap' },
   },
   bracelet: {
     tone: 'light',
     background: 'silk',
     dial: 'hairline',
+    face: 'bracelet',
     name: { fa: 'دستبند', en: 'Bracelet' },
   },
 };

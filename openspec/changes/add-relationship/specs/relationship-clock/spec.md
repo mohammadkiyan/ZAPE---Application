@@ -56,20 +56,34 @@ Tapping the hero SHALL open the Rel Clock tab. The hero's accessibility label SH
 
 ### Requirement: Rel Clock face
 
-The Rel Clock tab SHALL show the clock face, matching the canvas ClockFace part:
+The Rel Clock tab SHALL show the clock face. Every theme's face has the same header:
 
-- «شما» and «همراه» labels joined by the thread
-- the title «زمان ما»
-- six dials: years, months, days, hours, minutes, seconds, each with its value, unit label and progress arc toward its next unit
-- a milliseconds readout
+- «شما» and «همراه» labels joined by a burgundy bar
 - the since line
+- the title «زمان ما»
 
-All of it is drawn in the current theme's dial variant (classic, chrono or hairline) over the current background. The Clock style panel from `clock-themes` SHALL appear below the face.
+Below the header the time is drawn by the theme's face, over the current background:
+
+- **dials** (Constellation, Porcelain, Chronograph, Mist), matching the mobile canvas ClockFace part: six dials (years, months, days, hours, minutes, seconds) strung on the thread, each with its value, unit label and progress toward its next unit in the theme's dial variant (classic, chrono or hairline), and a milliseconds readout where the thread ends.
+- **rings**, **astrolabe**, **ruler**, **editorial**, **flap** and **bracelet**, following the RelTime device canvas `Face*` parts. The device parts are drawn for a landscape screen, so the phone keeps each part's elements and re-composes them for portrait:
+  - Rings: six concentric progress rings with years in the centre, seconds as the burgundy ring, and the other units listed below.
+  - Astrolabe: a planet per unit on its own orbit, joined by the thread, with months, days, the time and the milliseconds in a row below.
+  - Ruler: a graduated rule per unit with a burgundy cursor at its progress.
+  - Editorial: the years as a headline numeral over a burgundy rule, then months, days and the running time as text.
+  - Split-flap: every unit on flap tiles, a digit per tile.
+  - Bracelet: a bead per unit on the thread, on two strands, with its progress drawn around it.
+
+Every face SHALL show years, months, days, hours, minutes, seconds and running milliseconds. Switching theme SHALL change only how the time is drawn: the header, the values and the running clock stay as they are. The Clock style panel from `clock-themes` SHALL appear below the face.
 
 #### Scenario: Chronograph variant
 
 - **WHEN** the theme is Chronograph
 - **THEN** the six dials render in the chrono variant over the Sunburst background
+
+#### Scenario: Theme with its own face
+
+- **WHEN** the user picks Rings while the dials are showing
+- **THEN** the dials are replaced by the concentric rings over the Guilloché background, with the same values and without the clock restarting
 
 ### Requirement: Live ticking
 

@@ -13,6 +13,7 @@
 - [x] 2.3 Implement `useClockTick` (Reanimated frame callback, paused on background or blur) and the animated `hh:mm:ss.mmm` text. Verify with a test that the callback is inactive when `AppState` is background.
 - [x] 2.4 Build `ClockFace` (names, thread, six dials, ms readout, since line, backdrop, accessibility summary) and place it on the Rel Clock tab above the Clock style panel. Verify with a render test that the Chronograph theme uses the chrono variant.
 - [x] 2.5 Re-sync `TimeDial` and `ClockFace` with the current canvas parts. The face strings six dials (132 / 108 / 88–92) on the thread over its own backdrop, with the bar between the names and the thread ending at the milliseconds. Hairline is a single ring and arc around a larger value; chrono has the value window, counterweighted hand and sub-dial numerals and no arc. Verify with a render test per variant and a test that switches Constellation → Porcelain → Mist → Constellation → Mist on the Rel Clock tab without remounting the clock.
+- [x] 2.6 Give Rings, Astrolabe, Ruler, Editorial, Split-flap and Bracelet their own Rel Clock faces from the RelTime device canvas `Face*` parts, re-composed for portrait, behind a `face` field in the theme catalog. `ClockFace` keeps one header and one running clock and swaps only the face. Verify with a render test per theme (its face and no other, every unit shown) and a test that switches through all six and back to Constellation without remounting the clock.
 
 ## 3. Home frame
 

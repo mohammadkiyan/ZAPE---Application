@@ -144,6 +144,38 @@ describe('Rel Clock style switching', () => {
     }
   });
 
+  it('swaps the whole face for themes that have their own, without restarting the clock', async () => {
+    const reanimated = jest.requireMock('react-native-reanimated');
+    const original = reanimated.useFrameCallback;
+    const frames = new Set<{ isActive: boolean }>();
+    jest.spyOn(reanimated, 'useFrameCallback').mockImplementation((...args: unknown[]) => {
+      const frame = original(...args);
+      frames.add(frame);
+      return frame;
+    });
+
+    renderRouter(routes, { initialUrl: '/clock' });
+    await waitFor(() => expect(screen.getByTestId('clock-face')).toBeTruthy());
+    const face = screen.getByTestId('clock-face');
+    const mounted = [...frames];
+    const faces = ['dials', 'rings', 'astrolabe', 'ruler', 'editorial', 'flap', 'bracelet'];
+
+    for (const theme of ['rings', 'astrolabe', 'ruler', 'editorial', 'flap', 'bracelet'] as const) {
+      fireEvent.press(screen.getByTestId(`theme-${theme}`));
+      await waitFor(() => expect(screen.getByTestId(`theme-${theme}`)).toBeSelected());
+      expect(faces.filter((id) => screen.queryByTestId(`face-${id}`))).toEqual([theme]);
+      expect(screen.queryByTestId('time-dial')).toBeNull();
+      expect(screen.getByTestId('clock-face')).toBe(face);
+      expect([...frames]).toEqual(mounted);
+      expect(screen.getByText('از ۲۴ اسفند ۱۳۹۹')).toBeTruthy();
+    }
+
+    await pick('constellation');
+    expectClockStyle('constellation');
+    expectCanvasTime();
+    expect(screen.getByTestId('clock-face')).toBe(face);
+  });
+
   it('keeps the same running clock and the same relationship data while switching', async () => {
     const reanimated = jest.requireMock('react-native-reanimated');
     const original = reanimated.useFrameCallback;

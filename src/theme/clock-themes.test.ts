@@ -25,12 +25,15 @@ describe('clock theme catalog', () => {
     }
   });
 
-  it('maps every theme to a valid tone, background and dial', () => {
+  it('maps every theme to a valid tone, background, dial and face', () => {
     for (const id of THEME_IDS) {
       const theme = THEMES[id];
       expect(TONE_IDS).toContain(theme.tone);
       expect(isBackgroundId(theme.background)).toBe(true);
       expect(['classic', 'chrono', 'hairline']).toContain(theme.dial);
+      expect(['dials', 'rings', 'astrolabe', 'ruler', 'editorial', 'flap', 'bracelet']).toContain(
+        theme.face
+      );
     }
   });
 
