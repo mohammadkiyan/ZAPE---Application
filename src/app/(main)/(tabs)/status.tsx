@@ -1,5 +1,5 @@
-import { TabScreen } from '@/features/shell/tab-screen';
+import { StatusScreen } from '@/features/status/status-screen';
 
 export default function Status() {
-  return <TabScreen tab="status" />;
+  return <StatusScreen />;
 }

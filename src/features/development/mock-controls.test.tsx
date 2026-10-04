@@ -58,13 +58,18 @@ describe('mock tools', () => {
     const run = jest.fn((state: MockState) => {
       state.partnerNote = 'hello';
     });
+    // A label of its own: the real status and note controls are registered too.
     registerPartnerControl({
-      id: 'test-leave-note',
-      label: { fa: 'همراه یادداشت می‌گذارد', en: 'Partner leaves a note' },
+      id: 'test-partner-action',
+      label: { fa: 'اقدام آزمایشی همراه', en: 'Partner test action' },
       run,
     });
     const result = render(<MockControlsSheet backend="mock" />, { wrapper: Wrapper });
-    fireEvent.press(result.getByText('Partner leaves a note'));
+    // The three controls of add-status-and-notes are listed for the developer.
+    expect(result.getByText('Partner sets a status')).toBeTruthy();
+    expect(result.getByText('Partner leaves a note')).toBeTruthy();
+    expect(result.getByText('Partner reads my note')).toBeTruthy();
+    fireEvent.press(result.getByText('Partner test action'));
     await waitFor(() => expect(run).toHaveBeenCalled());
     expect((await mockStore.load()).partnerNote).toBe('hello');
 

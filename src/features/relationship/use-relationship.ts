@@ -1,3 +1,4 @@
+import { useCallback, useSyncExternalStore } from 'react';
 import { useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { getApiClient } from '@/api/backend';
 import { ApiError } from '@/api/client';
@@ -33,6 +34,50 @@ export async function fetchRelationship(
     // The gate reads `me`; refreshing it routes an ended relationship back to the step.
     void queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY });
     return null;
+  }
+}
+
+/**
+ * The relationship as last fetched, without becoming one of its fetchers: for a hook that only
+ * needs a fact from it (the time zone, say) and should not add requests of its own.
+ */
+export function useCachedRelationship(): Relationship | null | undefined {
+  const queryClient = useQueryClient();
+  const subscribe = useCallback(
+    (onChange: () => void) =>
+      queryClient.getQueryCache().subscribe((event) => {
+        if (isRelationshipKey(event.query)) onChange();
+      }),
+    [queryClient]
+  );
+  const read = () => queryClient.getQueryData<Relationship | null>(RELATIONSHIP_QUERY_KEY);
+  return useSyncExternalStore(subscribe, read, read);
+}
+
+function isRelationshipKey(query: { queryKey: readonly unknown[] }): boolean {
+  return (
+    query.queryKey.length === RELATIONSHIP_QUERY_KEY.length &&
+    query.queryKey.every((part, index) => part === RELATIONSHIP_QUERY_KEY[index])
+  );
+}
+
+/**
+ * Runs a request for data that hangs off the relationship (statuses, notes). If ZAPE answers
+ * that there is no relationship any more, the gate is told, as `fetchRelationship` does, and
+ * the error is passed on.
+ */
+export async function fetchForRelationship<T>(
+  queryClient: QueryClient,
+  request: () => Promise<T>
+): Promise<T> {
+  try {
+    return await request();
+  } catch (error) {
+    if (error instanceof ApiError && error.serverCode === NO_RELATIONSHIP) {
+      void queryClient.invalidateQueries({ queryKey: RELATIONSHIP_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY });
+    }
+    throw error;
   }
 }
 

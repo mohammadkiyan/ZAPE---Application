@@ -12,14 +12,22 @@ function Overlay({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Adapts the `(tabs)` navigator to the floating bar, drawn over the screen content. */
-export function ShellTabBar({ state, navigation }: BottomTabBarProps) {
+/**
+ * Adapts the `(tabs)` navigator to the floating bar, drawn over the screen content. `unread`
+ * comes from the layout that owns the notes feature: the shell does not know about notes.
+ */
+export function ShellTabBar({
+  state,
+  navigation,
+  unread = false,
+}: BottomTabBarProps & { unread?: boolean }) {
   const route = state.routes[state.index];
   const active = route ? tabForRouteName(route.name) : null;
   return (
     <Overlay>
       <FloatingTabBar
         active={active}
+        unread={unread}
         onSelect={(tab) => {
           const target = state.routes.find((r) => tabForRouteName(r.name) === tab);
           if (!target) return;
@@ -39,7 +47,7 @@ export function ShellTabBar({ state, navigation }: BottomTabBarProps) {
  * Keeps the tab bar visible above secondary screens in the `(main)` stack, highlighting the
  * section the screen was opened from (its `origin` param). Renders nothing on the tabs themselves.
  */
-export function SecondaryTabBarOverlay() {
+export function SecondaryTabBarOverlay({ unread = false }: { unread?: boolean }) {
   const segments = useSegments() as string[];
   const { origin } = useGlobalSearchParams<{ origin?: string }>();
   const router = useRouter();
@@ -48,7 +56,11 @@ export function SecondaryTabBarOverlay() {
   const active: TabId = isTabId(origin) ? origin : 'home';
   return (
     <Overlay>
-      <FloatingTabBar active={active} onSelect={(tab) => router.navigate(TAB_PATHS[tab])} />
+      <FloatingTabBar
+        active={active}
+        unread={unread}
+        onSelect={(tab) => router.navigate(TAB_PATHS[tab])}
+      />
     </Overlay>
   );
 }

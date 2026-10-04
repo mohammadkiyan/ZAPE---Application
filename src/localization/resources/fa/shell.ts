@@ -27,6 +27,7 @@ export const shell = {
     partnerActions: 'کنش‌های همراه',
     signInCode: 'کد ورود آزمایشی: {{code}}',
   },
+  language: 'زبان',
   devSignOut: 'خروج از حساب (توسعه)',
   configError: {
     title: 'پیکربندی ناقص است',

@@ -5,9 +5,15 @@ import '@/features/relationship/onboarding-step';
 import { EntryPending } from '@/features/onboarding/entry-pending';
 import { entryHref } from '@/features/onboarding/resolve-entry';
 import { deferDeepLink, useEntry } from '@/features/onboarding/use-entry';
+import { useHasUnreadNote } from '@/features/notes/use-note-board';
 import { SecondaryTabBarOverlay } from '@/features/shell/shell-tab-bar';
 
 export const unstable_settings = { initialRouteName: '(tabs)' };
+
+/** The tab bar over secondary screens, with the Note tab's unread dot. */
+function TabBarOverlay() {
+  return <SecondaryTabBarOverlay unread={useHasUnreadNote()} />;
+}
 
 /** Secondary screens stack above the tabs; the tab bar stays visible over them. */
 export default function MainLayout() {
@@ -26,7 +32,7 @@ export default function MainLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
       </Stack>
-      <SecondaryTabBarOverlay />
+      <TabBarOverlay />
     </View>
   );
 }

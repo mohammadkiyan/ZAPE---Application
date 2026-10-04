@@ -3,11 +3,12 @@ import { useIsFocused } from 'expo-router';
 import type { Relationship } from '@/api/contracts/relationship';
 import { useClockStyle, type ClockStyle } from '@/features/clock-themes/use-clock-style';
 import { ClockHero } from '@/features/relationship-clock/clock-hero';
-import { HomeThread } from '@/features/relationship/home-thread';
+import { HomeNoteCard } from '@/features/notes/home-note-card';
 import { InviteCard } from '@/features/relationship/invite-card';
 import { useRelationship } from '@/features/relationship/use-relationship';
 import { HomeHeaderChip } from '@/features/shell/connectivity-ui';
 import { TabScreen } from '@/features/shell/tab-screen';
+import { HomeStatusThread } from '@/features/status/home-status-thread';
 import { THEMES } from '@/theme/clock-themes';
 
 export interface HomeSlotContext {
@@ -28,7 +29,10 @@ interface HomeSlot {
  * leaves no gap.
  */
 const HOME_SLOTS: HomeSlot[] = [
-  { id: 'thread', render: ({ relationship }) => <HomeThread relationship={relationship} /> },
+  {
+    id: 'thread',
+    render: ({ relationship }) => <HomeStatusThread relationship={relationship} />,
+  },
   {
     id: 'clock',
     render: ({ relationship, style, focused }) => (
@@ -41,6 +45,8 @@ const HOME_SLOTS: HomeSlot[] = [
     ),
   },
   { id: 'invite', render: ({ relationship }) => <InviteCard relationship={relationship} /> },
+  // Takes the invite card's place once the partner has joined and either of you has a note.
+  { id: 'note', render: ({ relationship }) => <HomeNoteCard relationship={relationship} /> },
 ];
 
 export function HomeScreen() {

@@ -360,7 +360,7 @@ describe('mock responses and the ZAPE contract', () => {
     const first = await saveNote(you, 'first', KEY_1);
     await saveNote(you, 'second', KEY_2);
     const errors = contract.errors;
-    const cases: Array<[keyof typeof errors, Promise<unknown>]> = [
+    const cases: [keyof typeof errors, Promise<unknown>][] = [
       ['no_relationship', getStatusBoard(stranger)],
       ['invalid_mood', setStatus(you, 'angry' as never, KEY_1)],
       ['note_empty', saveNote(you, ' ', 'key-00000003')],

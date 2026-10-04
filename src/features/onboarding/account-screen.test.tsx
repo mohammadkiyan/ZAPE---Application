@@ -58,9 +58,10 @@ describe('Account step', () => {
     sessionStore.setState({ status: 'signed-out', credential: undefined });
     localStepStore.setState({ step: 'account', isHydrated: true });
   });
+  // Once a test turns fake timers on they stay on for the rest of the file, as renderRouter
+  // leaves them: on Node 22 an awaited act never resolves after switching back to real timers.
   afterEach(() => {
     jest.restoreAllMocks();
-    jest.useRealTimers();
   });
 
   it('says a new number creates an account', () => {

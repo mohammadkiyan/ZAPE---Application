@@ -1,4 +1,5 @@
-import { I18nManager, View, useWindowDimensions } from 'react-native';
+import type { ReactNode } from 'react';
+import { I18nManager, Pressable, View, useWindowDimensions } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import type { Relationship } from '@/api/contracts/relationship';
@@ -19,8 +20,33 @@ function halfPath(orbX: number, centre: number): { d: string; length: number } {
   return { d, length: Math.round(Math.abs(centre - x0) + HEIGHT - y0) };
 }
 
-function HomeOrb({ joined, testID }: { joined: boolean; testID: string }) {
+/**
+ * What an orb shows once a feature has something to put in it (the status feature fills both).
+ * Without it an orb shows the relationship's own state: the person, or "not joined yet".
+ */
+export interface HomeOrbContent {
+  /** Drawn inside the orb, e.g. a mood glyph. */
+  glyph?: ReactNode;
+  /** A dashed, hollow orb: nothing has been set yet. */
+  empty?: boolean;
+  label: string;
+  meta?: string;
+  accessibilityLabel: string;
+}
+
+function HomeOrb({
+  joined,
+  empty = false,
+  testID,
+  children,
+}: {
+  joined: boolean;
+  empty?: boolean;
+  testID: string;
+  children?: ReactNode;
+}) {
   const { palette } = useTone();
+  const solid = joined && !empty;
   return (
     <View
       testID={testID}
@@ -28,12 +54,14 @@ function HomeOrb({ joined, testID }: { joined: boolean; testID: string }) {
         width: ORB,
         height: ORB,
         borderRadius: ORB / 2,
+        alignItems: 'center',
+        justifyContent: 'center',
         borderWidth: 1,
-        borderStyle: joined ? 'solid' : 'dashed',
-        borderColor: joined ? palette.edge : BURGUNDY,
-        backgroundColor: joined ? palette.glass : 'transparent',
+        borderStyle: solid ? 'solid' : 'dashed',
+        borderColor: solid ? palette.edge : joined ? palette.control : BURGUNDY,
+        backgroundColor: solid ? palette.glass : 'transparent',
       }}>
-      {joined ? (
+      {solid ? (
         <View
           style={{
             position: 'absolute',
@@ -47,7 +75,33 @@ function HomeOrb({ joined, testID }: { joined: boolean; testID: string }) {
           }}
         />
       ) : null}
+      {children}
     </View>
+  );
+}
+
+/** An orb with its label: a button when it has content to open, plain otherwise. */
+function OrbColumn({
+  testID,
+  content,
+  onPress,
+  children,
+}: {
+  testID: string;
+  content: HomeOrbContent | undefined;
+  onPress: (() => void) | undefined;
+  children: ReactNode;
+}) {
+  if (!content || !onPress) return <View style={{ alignItems: 'center' }}>{children}</View>;
+  return (
+    <Pressable
+      testID={`${testID}-button`}
+      accessibilityRole="button"
+      accessibilityLabel={content.accessibilityLabel}
+      onPress={onPress}
+      style={{ alignItems: 'center' }}>
+      {children}
+    </Pressable>
   );
 }
 
@@ -71,7 +125,19 @@ function OrbLabel({ name, meta }: { name: string; meta?: string }) {
  * clock below. "You" comes from the reading start (right in Persian). The partner's half and
  * orb are dashed until they join.
  */
-export function HomeThread({ relationship }: { relationship: Pick<Relationship, 'members'> }) {
+export function HomeThread({
+  relationship,
+  you: youContent,
+  partner: partnerContent,
+  onPressOrb,
+}: {
+  relationship: Pick<Relationship, 'members'>;
+  you?: HomeOrbContent;
+  /** Ignored until the partner has joined. */
+  partner?: HomeOrbContent;
+  /** Makes both orbs buttons, e.g. to open the Status tab. */
+  onPressOrb?: () => void;
+}) {
   const { t } = useTranslation('relationship');
   const { width } = useWindowDimensions();
   const w = width - 32;
@@ -84,15 +150,20 @@ export function HomeThread({ relationship }: { relationship: Pick<Relationship, 
   const you = halfPath(youX, centre);
   const other = halfPath(partnerX, centre);
 
+  // With orb content each orb is its own control; otherwise the thread reads as one element.
+  const filled = Boolean(youContent || (joined && partnerContent));
+
   return (
     <View
       testID="home-thread"
       style={{ height: HEIGHT + 4, marginHorizontal: 16, direction: 'ltr' }}
-      accessible
+      accessible={!filled}
       accessibilityLabel={
-        joined
-          ? `${t('home.you')}، ${partner?.name ?? t('home.partner')}`
-          : `${t('home.you')}، ${t('home.partner')}: ${t('home.notJoined')}`
+        filled
+          ? undefined
+          : joined
+            ? `${t('home.you')}، ${partner?.name ?? t('home.partner')}`
+            : `${t('home.you')}، ${t('home.partner')}: ${t('home.notJoined')}`
       }>
       <Svg
         width={w}
@@ -117,15 +188,29 @@ export function HomeThread({ relationship }: { relationship: Pick<Relationship, 
         )}
       </Svg>
       <View style={{ position: 'absolute', left: youX - 48, top: 0, alignItems: 'center' }}>
-        <HomeOrb joined testID="orb-you" />
-        <OrbLabel name={t('home.you')} />
+        <OrbColumn testID="orb-you" content={youContent} onPress={onPressOrb}>
+          <HomeOrb joined empty={youContent?.empty} testID="orb-you">
+            {youContent?.glyph}
+          </HomeOrb>
+          <OrbLabel name={youContent?.label ?? t('home.you')} meta={youContent?.meta} />
+        </OrbColumn>
       </View>
       <View style={{ position: 'absolute', left: partnerX - 48, top: 0, alignItems: 'center' }}>
-        <HomeOrb joined={joined} testID="orb-partner" />
         {joined ? (
-          <OrbLabel name={partner?.name ?? t('home.partner')} />
+          <OrbColumn testID="orb-partner" content={partnerContent} onPress={onPressOrb}>
+            <HomeOrb joined empty={partnerContent?.empty} testID="orb-partner">
+              {partnerContent?.glyph}
+            </HomeOrb>
+            <OrbLabel
+              name={partnerContent?.label ?? partner?.name ?? t('home.partner')}
+              meta={partnerContent?.meta}
+            />
+          </OrbColumn>
         ) : (
-          <OrbLabel name={t('home.notJoined')} meta={t('home.invited')} />
+          <>
+            <HomeOrb joined={false} testID="orb-partner" />
+            <OrbLabel name={t('home.notJoined')} meta={t('home.invited')} />
+          </>
         )}
       </View>
     </View>

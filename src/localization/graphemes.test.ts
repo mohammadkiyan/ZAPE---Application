@@ -75,7 +75,7 @@ describe('countGraphemesFallback', () => {
     try {
       intl.Segmenter = undefined;
       jest.isolateModules(() => {
-        const isolated = require('./graphemes') as typeof import('./graphemes');
+        const isolated = jest.requireActual<typeof import('./graphemes')>('./graphemes');
         expect(isolated.countGraphemes(FAMILY + HEART)).toBe(2);
         expect(isolated.countGraphemes('می‌کنم')).toBe(5);
       });

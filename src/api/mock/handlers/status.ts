@@ -38,7 +38,7 @@ export function mockStatuses(state: MockState): MockStatusSlice {
     if (couple) {
       const [you, partner] = couple;
       const now = Date.now();
-      const seed: Array<[minutesAgo: number, accountId: string, mood: Mood]> = [
+      const seed: [minutesAgo: number, accountId: string, mood: Mood][] = [
         [403, you, 'calm'],
         [357, partner, 'tired'],
         [249, you, 'focused'],

@@ -111,11 +111,15 @@ export function useTone(): ToneContextValue {
 export function ToneProvider({ tone, children }: PropsWithChildren<{ tone: Tone }>) {
   const parent = useContext(ToneContext);
   const value = useMemo(() => ({ tone, palette: TONES[tone] }), [tone]);
+  // Keyed on the scheme, not the tone: light and gray share one, and re-running between them
+  // would push the native appearance through the parent's scheme and back.
+  const scheme = tone === 'dark' ? 'dark' : 'light';
+  const parentScheme = parent.tone === 'dark' ? 'dark' : 'light';
   useEffect(() => {
-    colorScheme.set(tone === 'dark' ? 'dark' : 'light');
+    colorScheme.set(scheme);
     // A nested provider (onboarding) hands the scheme back to its parent when it unmounts.
-    return () => colorScheme.set(parent.tone === 'dark' ? 'dark' : 'light');
-  }, [tone, parent.tone]);
+    return () => colorScheme.set(parentScheme);
+  }, [scheme, parentScheme]);
   const style = useMemo(() => [{ flex: 1 }, vars(toneVariables(tone))], [tone]);
   return (
     <ToneContext.Provider value={value}>

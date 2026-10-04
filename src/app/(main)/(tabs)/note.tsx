@@ -1,5 +1,5 @@
-import { TabScreen } from '@/features/shell/tab-screen';
+import { NoteScreen } from '@/features/notes/note-screen';
 
 export default function Note() {
-  return <TabScreen tab="note" />;
+  return <NoteScreen />;
 }

@@ -183,6 +183,7 @@ export function countGraphemes(text: string): number {
   const engine = engineSegmenter();
   if (!engine) return countGraphemesFallback(text);
   let count = 0;
-  for (const _ of engine.segment(text)) count += 1;
+  const clusters = engine.segment(text)[Symbol.iterator]();
+  while (!clusters.next().done) count += 1;
   return count;
 }

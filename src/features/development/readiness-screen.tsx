@@ -9,7 +9,7 @@ export function ReadinessScreen() {
     <View className="flex-1 justify-center bg-background px-6">
       <View className="mx-auto w-full max-w-lg gap-8">
         <View className="gap-3">
-          <Text className="text-center font-latin text-6xl font-semibold text-primary">ZAPE</Text>
+          <Text className="text-center font-latin text-6xl font-semibold">ZAPE</Text>
           <View className="mx-auto h-0.5 w-16 bg-primary" />
           <Text className="text-center text-xs tracking-widest text-muted-foreground">
             {t('readiness.foundation')}

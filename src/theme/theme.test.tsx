@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react-native';
-import { Text } from 'react-native';
+import { Appearance, Text } from 'react-native';
 import { THEMES, TONES } from './clock-themes';
 import { ToneProvider, contrastRatio, flatten, toneVariables, useTone } from './theme';
 
@@ -28,6 +28,21 @@ describe('tone theming', () => {
       const bg = flatten(palette.bg, palette.bg);
       expect(contrastRatio(muted, bg)).toBeGreaterThanOrEqual(4.5);
     }
+  });
+
+  it('leaves the native appearance alone when switching between light and gray', () => {
+    const setColorScheme = jest.spyOn(Appearance, 'setColorScheme');
+    const result = render(<ToneProvider tone="light">{null}</ToneProvider>);
+    expect(setColorScheme).toHaveBeenLastCalledWith('light');
+    setColorScheme.mockClear();
+
+    result.rerender(<ToneProvider tone="gray">{null}</ToneProvider>);
+    result.rerender(<ToneProvider tone="light">{null}</ToneProvider>);
+    expect(setColorScheme).not.toHaveBeenCalled();
+
+    result.rerender(<ToneProvider tone="dark">{null}</ToneProvider>);
+    expect(setColorScheme).toHaveBeenLastCalledWith('dark');
+    setColorScheme.mockRestore();
   });
 
   it('exposes the tone to descendants and lets onboarding force the light tone', () => {

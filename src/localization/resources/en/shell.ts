@@ -30,6 +30,7 @@ export const shell: Strings<typeof fa> = {
     partnerActions: 'Partner actions',
     signInCode: 'Mock sign-in code: {{code}}',
   },
+  language: 'Language',
   devSignOut: 'Sign out (development)',
   configError: {
     title: 'Configuration incomplete',

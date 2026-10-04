@@ -1,19 +1,29 @@
 import type { PropsWithChildren } from 'react';
 import { Modal, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Minus, Plus } from 'lucide-react-native';
+import { Minus, Plus, X } from 'lucide-react-native';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { useTone } from '@/theme/theme';
 
-/** A bottom sheet over a dimmed backdrop; tapping outside closes it. */
+/**
+ * A bottom sheet over a dimmed backdrop; tapping outside closes it. `closeLabel` adds an
+ * explicit Close control beside the title.
+ */
 export function Sheet({
   visible,
   title,
   onClose,
+  closeLabel,
   children,
   testID,
-}: PropsWithChildren<{ visible: boolean; title: string; onClose: () => void; testID?: string }>) {
+}: PropsWithChildren<{
+  visible: boolean;
+  title: string;
+  onClose: () => void;
+  closeLabel?: string;
+  testID?: string;
+}>) {
   const insets = useSafeAreaInsets();
   const { palette } = useTone();
   return (
@@ -56,6 +66,29 @@ export function Sheet({
           <Text accessibilityRole="header" className="text-center text-lg font-semibold">
             {title}
           </Text>
+          {closeLabel ? (
+            <Pressable
+              testID="sheet-close"
+              accessibilityRole="button"
+              accessibilityLabel={closeLabel}
+              onPress={onClose}
+              hitSlop={6}
+              style={{
+                position: 'absolute',
+                top: 20,
+                end: 16,
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderWidth: 1,
+                borderColor: palette.glassEdge,
+                backgroundColor: palette.off,
+              }}>
+              <Icon as={X} size={18} className="text-foreground" />
+            </Pressable>
+          ) : null}
           {children}
         </View>
       </View>

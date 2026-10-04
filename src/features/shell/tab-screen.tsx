@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { ScrollView, View, useWindowDimensions } from 'react-native';
+import { ScrollView, View, useWindowDimensions, type ScrollViewProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Text } from '@/components/ui/text';
@@ -16,6 +16,8 @@ export interface TabScreenProps {
   headerAccessory?: ReactNode;
   /** The tab title and skeleton line; off once a feature fills the tab. */
   heading?: boolean;
+  /** For a screen that needs to know what is on screen, e.g. to mark a note read. */
+  scrollViewProps?: Pick<ScrollViewProps, 'onScroll' | 'onLayout' | 'scrollEventThrottle'>;
   children?: ReactNode;
   footer?: ReactNode;
 }
@@ -41,6 +43,7 @@ export function TabScreen({
   backdrop = false,
   headerAccessory,
   heading = true,
+  scrollViewProps,
   children,
   footer,
 }: TabScreenProps) {
@@ -61,6 +64,8 @@ export function TabScreen({
         />
       ) : null}
       <ScrollView
+        testID={`tab-scroll-${tab}`}
+        {...scrollViewProps}
         contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: bottomInset, gap: 24 }}>
         <View className="min-h-12 flex-row items-center justify-between gap-3 px-4">
           <Wordmark />

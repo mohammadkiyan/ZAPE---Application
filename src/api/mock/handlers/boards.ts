@@ -25,8 +25,13 @@ export function boardContext(request: MockRequest, state: MockState): BoardConte
   };
 }
 
+/** A {@link BoardContext} whose partner has joined. */
+export interface PartnerContext extends BoardContext {
+  partnerId: string;
+}
+
 /** The same for a partner control: the signed-in account's open relationship and its partner. */
-export function partnerContext(state: MockState): Required<BoardContext> | undefined {
+export function partnerContext(state: MockState): PartnerContext | undefined {
   const relationship = openRelationshipOf(mockRelationships(state), state.user.id);
   const partnerId = relationship?.members.find((m) => m.accountId !== state.user.id)?.accountId;
   return relationship && partnerId ? { relationship, youId: state.user.id, partnerId } : undefined;

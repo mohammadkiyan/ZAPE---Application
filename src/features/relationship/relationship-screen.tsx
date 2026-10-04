@@ -26,6 +26,7 @@ import { rememberRelationship } from './relationship-cache';
 import { Sheet } from './sheet';
 import { utcOffsetLabel, zoneCityFallback } from './start-picker';
 import { RELATIONSHIP_QUERY_KEY, useRelationship } from './use-relationship';
+import { Button } from '@/components/ui/button';
 
 function Group({
   title,
@@ -340,21 +341,23 @@ export function RelationshipMoreRow() {
   const relationship = useRelationship().data;
   const { palette } = useTone();
   return (
-    <Pressable
+    <Button
       testID="more-relationship"
       accessibilityRole="button"
       onPress={() => router.push({ pathname: '/relationship', params: { origin: 'more' } })}
       className="mx-4 min-h-14 flex-row items-center justify-between rounded-2xl px-4"
       style={{ borderWidth: 1, borderColor: palette.glassEdge, backgroundColor: palette.glass }}>
-      <Text className="font-medium">{t('more.row')}</Text>
-      {relationship ? (
-        <Text className="text-sm text-muted-foreground">
-          {localizeDigits(
-            formatStartDate(relationship.start, relationship.calendar, locale),
-            locale
-          )}
-        </Text>
-      ) : null}
-    </Pressable>
+      <View className="flex-row items-center justify-between">
+        <Text className="font-medium">{t('more.row')}</Text>
+        {relationship ? (
+          <Text className="text-sm text-muted-foreground">
+            {localizeDigits(
+              formatStartDate(relationship.start, relationship.calendar, locale),
+              locale
+            )}
+          </Text>
+        ) : null}
+      </View>
+    </Button>
   );
 }
