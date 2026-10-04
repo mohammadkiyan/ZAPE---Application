@@ -121,7 +121,7 @@ function LanguageOption({
       onPress={onSelect}
       className="flex-1">
       <Text
-        className={locale === 'en' ? 'font-latin font-semibold' : 'font-semibold'}
+        className={locale === 'en' ? 'font-latin font-semibold' : 'font-semibold p-0'}
         style={{ fontSize: 16 }}>
         {label}
       </Text>

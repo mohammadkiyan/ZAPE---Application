@@ -12,6 +12,7 @@
 - [x] 2.2 Port the `TimeDial` part to SVG with the classic, chrono and hairline variants across three tones. Add a render test per variant.
 - [x] 2.3 Implement `useClockTick` (Reanimated frame callback, paused on background or blur) and the animated `hh:mm:ss.mmm` text. Verify with a test that the callback is inactive when `AppState` is background.
 - [x] 2.4 Build `ClockFace` (names, thread, six dials, ms readout, since line, backdrop, accessibility summary) and place it on the Rel Clock tab above the Clock style panel. Verify with a render test that the Chronograph theme uses the chrono variant.
+- [x] 2.5 Re-sync `TimeDial` and `ClockFace` with the current canvas parts. The face strings six dials (132 / 108 / 88–92) on the thread over its own backdrop, with the bar between the names and the thread ending at the milliseconds. Hairline is a single ring and arc around a larger value; chrono has the value window, counterweighted hand and sub-dial numerals and no arc. Verify with a render test per variant and a test that switches Constellation → Porcelain → Mist → Constellation → Mist on the Rel Clock tab without remounting the clock.
 
 ## 3. Home frame
 

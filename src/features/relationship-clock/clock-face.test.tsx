@@ -14,6 +14,7 @@ import { CANVAS_NOW, canvasRelationship } from '@/testing/relationship';
 import { seedOnboarded } from '@/testing/session';
 import { TestProviders, setTestLocale } from '@/testing/test-providers';
 import { render } from '@testing-library/react-native';
+import { StyleSheet } from 'react-native';
 import { ClockFace } from './clock-face';
 
 function TestRoot() {
@@ -50,7 +51,7 @@ describe('ClockFace', () => {
   it('shows six dials, the milliseconds, the since line and a spoken summary', () => {
     render(
       <TestProviders>
-        <ClockFace relationship={canvasRelationship} tone="dark" variant="classic" />
+        <ClockFace relationship={canvasRelationship} theme="constellation" background="orbits" />
       </TestProviders>
     );
     const face = screen.getByTestId('clock-face');
@@ -71,11 +72,42 @@ describe('ClockFace', () => {
     expect(screen.getByText('از ۲۴ اسفند ۱۳۹۹')).toBeTruthy();
   });
 
+  it('strings the dials on the thread in the canvas constellation', () => {
+    const face = (theme: 'constellation' | 'mist') => (
+      <TestProviders>
+        <ClockFace
+          relationship={canvasRelationship}
+          theme={theme}
+          background={theme === 'mist' ? 'contour' : 'orbits'}
+        />
+      </TestProviders>
+    );
+    const result = render(face('constellation'));
+    const sizes = (['y', 'mo', 'd', 'h', 'mi', 's'] as const).map(
+      (unit) =>
+        StyleSheet.flatten(
+          within(screen.getByTestId(`clock-dial-${unit}`)).getByTestId('time-dial').props.style
+        ).width
+    );
+    expect(sizes).toEqual([132, 108, 108, 88, 92, 88]);
+    // Months sit left of days in either writing direction.
+    const left = (unit: string) =>
+      StyleSheet.flatten(screen.getByTestId(`clock-dial-${unit}`).props.style).left;
+    expect(left('mo')).toBeLessThan(left('d'));
+    expect(screen.getByTestId('clock-thread').props.strokeWidth).toBe(1.75);
+    expect(screen.getByTestId('backdrop-orbits', { includeHiddenElements: true })).toBeTruthy();
+
+    result.rerender(face('mist'));
+    expect(screen.getByTestId('clock-thread').props.strokeWidth).toBe(1.25);
+    expect(screen.getByTestId('backdrop-contour', { includeHiddenElements: true })).toBeTruthy();
+    expect(screen.queryByTestId('backdrop-orbits', { includeHiddenElements: true })).toBeNull();
+  });
+
   it('writes the since line in Gregorian for English', async () => {
     await setTestLocale('en');
     render(
       <TestProviders>
-        <ClockFace relationship={canvasRelationship} tone="light" variant="hairline" />
+        <ClockFace relationship={canvasRelationship} theme="ruler" background="graticule" />
       </TestProviders>
     );
     expect(screen.getByText('Since March 14, 2021')).toBeTruthy();

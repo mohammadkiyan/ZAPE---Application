@@ -1,5 +1,6 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { preferencesStore } from '@/preferences/preferences';
+import { createPreferencesStore, preferencesStore } from '@/preferences/preferences';
 import { TestProviders, setTestLocale } from '@/testing/test-providers';
 import { ClockStylePanel } from './clock-style-panel';
 
@@ -51,6 +52,18 @@ describe('clock style panel', () => {
       clockTheme: 'constellation',
       background: 'dots',
     });
+  });
+
+  it.each(['porcelain', 'mist'] as const)('keeps %s across a relaunch', async (theme) => {
+    const result = renderPanel();
+    fireEvent.press(result.getByTestId(`theme-${theme}`));
+    await waitFor(() => expect(result.getByTestId(`theme-${theme}`)).toBeSelected());
+    await waitFor(async () => expect(await AsyncStorage.getItem('zape.clock-theme')).toBe(theme));
+
+    // The next launch starts from a fresh store reading the same device storage.
+    const relaunched = createPreferencesStore();
+    await relaunched.getState().hydrate();
+    expect(relaunched.getState()).toMatchObject({ clockTheme: theme, background: 'auto' });
   });
 
   it('uses English names in English', async () => {
